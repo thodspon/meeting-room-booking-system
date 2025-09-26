@@ -6,7 +6,7 @@
  * *** แก้ไขชื่อองค์กรได้ที่นี่ ***
  * เปลี่ยนข้อมูลในไฟล์นี้เพื่อปรับแต่งให้เหมาะกับหน่วยงานของคุณ
  * 
- * อัพเดตล่าสุด: 2025-09-26 10:49:51
+ * อัพเดตล่าสุด: 2025-09-26 11:31:31
  */
 
 // ============================================
@@ -80,18 +80,14 @@ function getOrganizationHeader() {
         'sub_title' => $organization_config['sub_title']
     ];
 }
-
-// ============================================
-// การตั้งค่า Telegram Configuration
-// ============================================
-
-// การตั้งค่า Telegram เริ่มต้น (สำหรับระบบ) - กรุณาแก้ไขตามการตั้งค่าจริง
+// Telegram configuration
 $telegram_config = [
-    'enabled' => false, // เปิดใช้งานเมื่อตั้งค่าเรียบร้อยแล้ว
-    'default_token' => '', // ใส่ Bot Token ของคุณที่นี่
-    'default_chat_id' => '', // ใส่ Chat ID ของคุณที่นี่
-    'system_name' => 'ระบบจองห้องประชุม',
-    'timeout' => 30
+    'enabled' => true,
+    'default_token' => '',
+    'default_chat_id' => '',
+    'notification_enabled' => true,
+    'booking_notifications' => true,
+    'system_notifications' => true
 ];
 
 /**
@@ -132,7 +128,10 @@ function saveUserTelegramConfig($user_id, $token, $chat_id, $enabled = true) {
  */
 function testTelegramMessage($token, $chat_id, $message = null) {
     if (empty($token) || empty($chat_id)) {
-        return ['ok' => false, 'description' => 'Token หรือ Chat ID ไม่ถูกต้อง'];
+        return [
+            'success' => false, 
+            'error' => 'Token หรือ Chat ID ไม่ถูกต้อง'
+        ];
     }
     
     if ($message === null) {
@@ -159,10 +158,35 @@ function testTelegramMessage($token, $chat_id, $message = null) {
     $result = @file_get_contents($url, false, $context);
     
     if ($result === false) {
-        return ['ok' => false, 'description' => 'ไม่สามารถเชื่อมต่อ Telegram API ได้'];
+        return [
+            'success' => false, 
+            'error' => 'ไม่สามารถเชื่อมต่อ Telegram API ได้'
+        ];
     }
     
-    return json_decode($result, true);
+    $response = json_decode($result, true);
+    
+    if (isset($response['ok']) && $response['ok']) {
+        return [
+            'success' => true,
+            'message' => 'ส่งข้อความทดสอบสำเร็จ! ตรวจสอบใน Telegram ของคุณ'
+        ];
+    } else {
+        $error_msg = isset($response['description']) ? $response['description'] : 'ข้อผิดพลาดไม่ทราบสาเหตุ';
+        return [
+            'success' => false,
+            'error' => $error_msg
+        ];
+    }
+}
+
+/**
+ * บันทึกการตั้งค่า Telegram ของระบบ (สำหรับ Admin)
+ */
+function saveSystemTelegramConfig($token, $chat_id, $enabled = true) {
+    // ในอนาคตจะบันทึกลงฐานข้อมูล
+    // ตอนนี้ส่งคืน true เพื่อให้ทำงานได้
+    return true;
 }
 
 /**

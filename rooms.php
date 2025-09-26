@@ -30,13 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $location = trim($_POST['location']);
             $description = trim($_POST['description']);
             $equipment = trim($_POST['equipment']);
+            $room_color = trim($_POST['room_color']) ?: '#3b82f6';
             
             if (empty($room_name) || empty($room_code) || $capacity <= 0) {
                 throw new Exception('กรุณากรอกข้อมูลให้ครบถ้วน');
             }
             
-            $stmt = $pdo->prepare("INSERT INTO rooms (room_name, room_code, capacity, location, description, equipment) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$room_name, $room_code, $capacity, $location, $description, $equipment]);
+            $stmt = $pdo->prepare("INSERT INTO rooms (room_name, room_code, capacity, location, description, equipment, room_color) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$room_name, $room_code, $capacity, $location, $description, $equipment, $room_color]);
             
             logActivity($pdo, $_SESSION['user_id'], 'add_room', "Added room: {$room_name} ({$room_code})");
             $success = 'เพิ่มห้องประชุมเรียบร้อยแล้ว';
@@ -49,13 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $location = trim($_POST['location']);
             $description = trim($_POST['description']);
             $equipment = trim($_POST['equipment']);
+            $room_color = trim($_POST['room_color']) ?: '#3b82f6';
             
             if (empty($room_name) || empty($room_code) || $capacity <= 0) {
                 throw new Exception('กรุณากรอกข้อมูลให้ครบถ้วน');
             }
             
-            $stmt = $pdo->prepare("UPDATE rooms SET room_name = ?, room_code = ?, capacity = ?, location = ?, description = ?, equipment = ? WHERE room_id = ?");
-            $stmt->execute([$room_name, $room_code, $capacity, $location, $description, $equipment, $room_id]);
+            $stmt = $pdo->prepare("UPDATE rooms SET room_name = ?, room_code = ?, capacity = ?, location = ?, description = ?, equipment = ?, room_color = ? WHERE room_id = ?");
+            $stmt->execute([$room_name, $room_code, $capacity, $location, $description, $equipment, $room_color, $room_id]);
             
             logActivity($pdo, $_SESSION['user_id'], 'edit_room', "Edited room ID: {$room_id}");
             $success = 'แก้ไขห้องประชุมเรียบร้อยแล้ว';
@@ -250,6 +252,24 @@ if (isset($_GET['edit'])) {
                                           placeholder="รายการอุปกรณ์ในห้องประชุม"><?php echo $edit_room ? htmlspecialchars($edit_room['equipment']) : ''; ?></textarea>
                             </div>
 
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">สีประจำห้อง</span>
+                                </label>
+                                <div class="flex gap-2 items-center">
+                                    <input type="color" name="room_color" class="input input-bordered w-20 h-12 p-1" 
+                                           value="<?php echo $edit_room ? htmlspecialchars($edit_room['room_color']) : '#3b82f6'; ?>">
+                                    <div class="text-sm opacity-70">เลือกสีที่จะแสดงในปฏิทินการจอง</div>
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button type="button" class="btn btn-xs" style="background-color: #ef4444; color: white;" onclick="document.querySelector('input[name=room_color]').value='#ef4444'">#ef4444</button>
+                                    <button type="button" class="btn btn-xs" style="background-color: #10b981; color: white;" onclick="document.querySelector('input[name=room_color]').value='#10b981'">#10b981</button>
+                                    <button type="button" class="btn btn-xs" style="background-color: #f59e0b; color: white;" onclick="document.querySelector('input[name=room_color]').value='#f59e0b'">#f59e0b</button>
+                                    <button type="button" class="btn btn-xs" style="background-color: #8b5cf6; color: white;" onclick="document.querySelector('input[name=room_color]').value='#8b5cf6'">#8b5cf6</button>
+                                    <button type="button" class="btn btn-xs" style="background-color: #3b82f6; color: white;" onclick="document.querySelector('input[name=room_color]').value='#3b82f6'">#3b82f6</button>
+                                </div>
+                            </div>
+
                             <div class="form-control mt-6">
                                 <button type="submit" class="btn btn-primary">
                                     <?php echo $edit_room ? 'บันทึกการแก้ไข' : 'เพิ่มห้องประชุม'; ?>
@@ -277,6 +297,7 @@ if (isset($_GET['edit'])) {
                                         <th>ชื่อห้อง</th>
                                         <th>ความจุ</th>
                                         <th>สถานที่</th>
+                                        <th>สี</th>
                                         <th>สถานะ</th>
                                         <th>จัดการ</th>
                                     </tr>
@@ -293,6 +314,12 @@ if (isset($_GET['edit'])) {
                                             </td>
                                             <td><?php echo $room['capacity']; ?> ที่นั่ง</td>
                                             <td><?php echo htmlspecialchars($room['location']); ?></td>
+                                            <td>
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-6 h-6 rounded border-2 border-gray-300" style="background-color: <?php echo htmlspecialchars($room['room_color'] ?? '#3b82f6'); ?>"></div>
+                                                    <span class="text-xs font-mono"><?php echo htmlspecialchars($room['room_color'] ?? '#3b82f6'); ?></span>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <form method="POST" class="inline">
                                                     <input type="hidden" name="action" value="toggle_status">

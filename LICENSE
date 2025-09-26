@@ -1,0 +1,82 @@
+MIT License
+
+Copyright (c) 2025 นายทศพล อุทก (Roi-et Digital Health Team)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## เกี่ยวกับโครงการ
+
+**Meeting Room Booking System v2.2 Color Edition Pro**  
+ระบบจองห้องประชุมออนไลน์สำหรับหน่วยงานต่างๆ
+
+**พัฒนาโดย:**  
+นายทศพล อุทก  
+นักวิชาการคอมพิวเตอร์ชำนาญการ  
+โรงพยาบาลร้อยเอ็ด  
+
+**ทีมพัฒนา:**  
+Roi-et Digital Health Team
+
+**ติดต่อ:**  
+- GitHub: https://github.com/thodspon/meeting-room-booking-system
+- องค์กร: โรงพยาบาลร้อยเอ็ด จังหวัดร้อยเอ็ด
+
+**คำขอบคุณ:**  
+- DaisyUI Framework
+- Tailwind CSS
+- PHP Community
+- Open Source Contributors
+
+---
+
+## การใช้งานเชิงพาณิชย์
+
+โครงการนี้อนุญาตให้ใช้งานเชิงพาณิชย์ได้ ภายใต้เงื่อนไข MIT License  
+หากนำไปใช้ในองค์กร กรุณาระบุที่มาและผู้พัฒนาไว้ในระบบ
+
+## การมีส่วนร่วม (Contributing)
+
+เชิญชวนนักพัฒนาทุกท่านมีส่วนร่วมในการพัฒนาโครงการ:
+
+1. Fork โครงการ
+2. สร้าง Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit การเปลี่ยนแปลง (`git commit -m 'Add some AmazingFeature'`)
+4. Push ไป Branch (`git push origin feature/AmazingFeature`)
+5. สร้าง Pull Request
+
+## การรายงานปัญหา (Issues)
+
+หากพบปัญหาการใช้งาน กรุณารายงานผ่าน GitHub Issues พร้อมรายละเอียด:
+- รุ่นของระบบปฏิบัติการ
+- รุ่นของ PHP และ MySQL
+- ขั้นตอนที่ทำให้เกิดปัญหา
+- ภาพหน้าจอ (ถ้ามี)
+
+## ความปลอดภัย (Security)
+
+หากพบช่องโหว่ด้านความปลอดภัย กรุณาติดต่อทีมพัฒนาโดยตรง  
+ไม่ควรเปิดเผยในส่วน Public Issues
+
+---
+
+**เวอร์ชัน:** 2.2 Color Edition Pro  
+**วันที่:** 26 กันยายน 2568  
+**Build:** 20250926

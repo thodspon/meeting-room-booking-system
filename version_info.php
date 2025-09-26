@@ -266,6 +266,9 @@ $current_version = getCurrentVersionInfo();
                             <div class="timeline-end mb-10">
                                 <time class="font-mono italic"><?php echo $info['date']; ?></time>
                                 <div class="text-lg font-black <?php echo $version === SYSTEM_VERSION ? 'text-primary' : ''; ?>">
+                                    <?php if ($version === SYSTEM_VERSION): ?>
+                                        <span class="badge badge-primary badge-sm mr-2">ปัจจุบัน</span>
+                                    <?php endif; ?>
                                     เวอร์ชัน <?php echo $version; ?> - <?php echo $info['title']; ?>
                                 </div>
                                 

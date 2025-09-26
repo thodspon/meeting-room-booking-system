@@ -10,9 +10,9 @@
  */
 
 // ข้อมูลเวอร์ชันปัจจุบัน
-define('SYSTEM_VERSION', '2.1');
+define('SYSTEM_VERSION', '2.2');
 define('SYSTEM_BUILD', '20250926');
-define('SYSTEM_CODENAME', 'Team Edition');
+define('SYSTEM_CODENAME', 'Color Edition Pro');
 
 // ข้อมูลผู้พัฒนา
 define('DEVELOPER_NAME', 'นายทศพล อุทก');
@@ -31,6 +31,48 @@ define('SYSTEM_ORGANIZATION', getOrganizationName());
  * ประวัติการพัฒนาระบบ
  */
 $version_history = [
+    '2.2' => [
+        'date' => '2025-09-26',
+        'title' => 'Color Edition Pro - Visual Enhancement & Real-time Features',
+        'features' => [
+            'ระบบสีห้องประชุม (Room Color System) - เลือกสีประจำแต่ละห้อง',
+            'ปฏิทินสาธารณะ (Public Calendar) - ดูการจองแบบไม่ต้อง Login',
+            'การแสดงสีห้องในปฏิทินแบบ Color-coded',
+            'ระบบจัดการสีห้องในหน้าจัดการห้องประชุม',
+            'Color Picker พร้อมชุดสีเริ่มต้น (แดง, เขียว, เหลือง, ม่วง, น้ำเงิน)',
+            'Tooltip แบบ Custom พร้อมข้อมูลครบถ้วนเป็นภาษาไทย',
+            'การแสดงเวลาปัจจุบันแบบเรียลไทม์ใน Tooltip',
+            'สถานะการใช้งานแบบเรียลไทม์ (กำลังใช้งาน, เสร็จสิ้นแล้ว)',
+            'ปุ่มเข้าถึงปฏิทินสาธารณะจากหน้าหลักและปฏิทินส่วนตัว',
+            'Legend แสดงสถานะการจองและสีห้องอย่างครบถ้วน',
+            'การแสดงสีห้องในรายการการจองทั้งหมด',
+            'Auto-refresh ปฏิทินสาธารณะทุก 5 นาที'
+        ],
+        'improvements' => [
+            'ปรับปรุงการแสดงผลการจองด้วยสีสันและสัญลักษณ์',
+            'เพิ่มความแม่นยำของการแสดงเวลาปัจจุบัน',
+            'ปรับปรุง UI/UX ให้สวยงามและใช้งานง่ายขึ้น',
+            'เพิ่มการตอบสนองบนอุปกรณ์มือถือ',
+            'ปรับปรุงประสิทธิภาพการแสดงผลปฏิทิน',
+            'เพิ่มความชัดเจนของสถานะการจอง',
+            'ปรับปรุงการจัดการ Memory Leaks ใน JavaScript',
+            'เพิ่มการแสดงผลแบบ Responsive Design'
+        ],
+        'database_updates' => [
+            'เพิ่มคอลัมน์ room_color (VARCHAR(7)) ในตาราง rooms',
+            'อัพเดทข้อมูลสีเริ่มต้นสำหรับห้องที่มีอยู่',
+            'เพิ่มการตั้งค่าระบบใหม่: room_color_enabled, public_calendar_enabled',
+            'สร้าง View ใหม่: calendar_view, room_usage_stats'
+        ],
+        'visual_enhancements' => [
+            'สถานะการอนุมัติ: สีห้อง + วงกลมเขียว',
+            'สถานะรออนุมัติ: เส้นประรอบๆ + วงกลมเหลืองกระพริบ',
+            'สถานะกำลังใช้งาน: วงกลมแดงกระพริบ',
+            'สถานะเสร็จสิ้น: วงกลมเทา',
+            'Hover Effects และ Animation ที่นุ่มนวล',
+            'Shadow Effects และ Transform Animation'
+        ]
+    ],
     '2.1' => [
         'date' => '2025-09-26',
         'title' => 'Team Edition - Configuration & Enhancement',

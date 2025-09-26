@@ -1,14 +1,21 @@
-# ไฟล์การตั้งค่าส่วนตัว
+# ไฟล์การตั้งค่าส่วนตัว - Meeting Room Booking System v2.2
 config/database.php
+config/telegram_users.json
+
+# ไฟล์ที่มีข้อมูลเฉพาะองค์กร
+includes/functions.php
 
 # ไฟล์ log และ cache
 *.log
 cache/
 logs/
+debug.txt
+error.log
 
 # ไฟล์ระบบปฏิบัติการ
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # ไฟล์ IDE
 .vscode/
@@ -16,18 +23,36 @@ Thumbs.db
 *.swp
 *.swo
 
-# ไฟล์ backup
+# ไฟล์ backup และ database
 *.bak
 *.backup
 *~
+*.sql.backup
+database_backup/
 
-# ไฟล์อัพโหลด (ถ้ามี)
+# ไฟล์อัพโหลดและสร้างขึ้น
 uploads/*
 !uploads/.gitkeep
+assets/uploads/
+exports/*.pdf
+reports/*.pdf
+
+# ไฟล์ Composer
+vendor/
+composer.lock
+
+# ไฟล์ Environment
+.env
+.env.local
+.env.production
 
 # ไฟล์ทดสอบ
 test_*.php
 check_*.php
+
+# ไฟล์ชั่วคราว
+tmp/
+temp/
 
 # ไฟล์คำแนะนำ (ลบหลังอัพโหลด)
 GITHUB_UPLOAD_GUIDE.md

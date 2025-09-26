@@ -1,9 +1,21 @@
 -- สร้างฐานข้อมูลระบบจองห้องประชุม
 -- ศูนย์ส่งเสริมสุขภาพสวนพยอม
--- พัฒนาโดย นายทศพล อุทก นักวิชาการคอมพิวเตอร์ชำนาญการ โรงพยาบาลร้อยเอ็ด
+-- พัฒนาโดย นายทศพล อุทก นักวิชาการคอมพิวเตอร์ชำนาญการ โร-- การตั้งค่าระบบเริ่มต้น
+INSERT INTO system_settings (setting_key, setting_value, description) VALUES
+('site_name', 'ระบบจองห้องประชุม ศูนย์ส่งเสริมสุขภาพสวนพยอม - Color Edition v2.2', 'ชื่อเว็บไซต์'),
+('booking_advance_days', '30', 'จำนวนวันที่สามารถจองล่วงหน้าได้'),
+('min_booking_duration', '60', 'ระยะเวลาการจองขั้นต่ำ (นาที)'),
+('max_booking_duration', '480', 'ระยะเวลาการจองสูงสุด (นาที)'),
+('booking_start_time', '08:00', 'เวลาเริ่มต้นที่สามารถจองได้'),
+('booking_end_time', '17:00', 'เวลาสิ้นสุดที่สามารถจองได้'),
+('auto_approve', '0', 'อนุมัติการจองอัตโนมัติ (0=ไม่, 1=ใช่)'),
+('telegram_notifications', '1', 'ส่งการแจ้งเตือนผ่าน Telegram (0=ไม่, 1=ใช่)'),
+('room_color_enabled', '1', 'เปิดใช้งานระบบสีห้องประชุม (0=ปิด, 1=เปิด)'),
+('default_room_color', '#3b82f6', 'สีเริ่มต้นสำหรับห้องประชุมใหม่'),
+('public_calendar_enabled', '1', 'เปิดใช้งานปฏิทินสาธารณะ (0=ปิด, 1=เปิด)');ยเอ็ด
 -- ทีมพัฒนา: Roi-et Digital Health Team
--- เวอร์ชั่น 2.1 Team Edition วันที่ 26 กันยายน 2568
--- อัพเดต: เพิ่มระบบ Telegram Configuration, ปรับปรุงระบบ 2FA, Dynamic Organization Config
+-- เวอร์ชั่น 2.2 Color Edition วันที่ 26 มกราคม 2568
+-- อัพเดต: เพิ่มระบบสีห้องประชุม (Room Color System), ปฏิทินสาธารณะ (Public Calendar)
 
 CREATE DATABASE IF NOT EXISTS meeting_room_db CHARACTER SET tis620 COLLATE tis620_thai_ci;
 USE meeting_room_db;
@@ -37,6 +49,7 @@ CREATE TABLE rooms (
     location VARCHAR(200),
     description TEXT,
     equipment TEXT,
+    room_color VARCHAR(7) DEFAULT '#3b82f6',
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -115,11 +128,11 @@ INSERT INTO users (username, password, fullname, email, department, position, ro
 ('user1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'นายทดสอบ ระบบ', 'user1@hospital.go.th', 'แผนกพยาบาล', 'พยาบาลวิชาชีพ', 'user');
 
 -- ห้องประชุมเริ่มต้น
-INSERT INTO rooms (room_name, room_code, capacity, location, description, equipment) VALUES
-('ห้องประชุมใหญ่', 'R001', 50, 'ชั้น 2 อาคารบริหาร', 'ห้องประชุมใหญ่สำหรับการประชุมบุคลากร', 'โปรเจคเตอร์, ระบบเสียง, เครื่องปรับอากาศ, Wi-Fi'),
-('ห้องประชุมเล็ก', 'R002', 20, 'ชั้น 1 อาคารบริหาร', 'ห้องประชุมสำหรับการประชุมแผนก', 'โปรเจคเตอร์, เครื่องปรับอากาศ, Wi-Fi'),
-('ห้องฝึกอบรม', 'R003', 30, 'ชั้น 3 อาคารบริหาร', 'ห้องสำหรับการฝึกอบรมและสัมมนา', 'โปรเจคเตอร์, ระบบเสียง, เครื่องปรับอากาศ, Wi-Fi, คอมพิวเตอร์'),
-('ห้องประชุมกลาง', 'R004', 35, 'ชั้น 2 อาคารผู้ป่วยนอก', 'ห้องประชุมสำหรับการประชุมหลายแผนก', 'โปรเจคเตอร์, ระบบเสียง, เครื่องปรับอากาศ, Wi-Fi');
+INSERT INTO rooms (room_name, room_code, capacity, location, description, equipment, room_color) VALUES
+('ห้องประชุมใหญ่', 'R001', 50, 'ชั้น 2 อาคารบริหาร', 'ห้องประชุมใหญ่สำหรับการประชุมบุคลากร', 'โปรเจคเตอร์, ระบบเสียง, เครื่องปรับอากาศ, Wi-Fi', '#ef4444'),
+('ห้องประชุมเล็ก', 'R002', 20, 'ชั้น 1 อาคารบริหาร', 'ห้องประชุมสำหรับการประชุมแผนก', 'โปรเจคเตอร์, เครื่องปรับอากาศ, Wi-Fi', '#10b981'),
+('ห้องฝึกอบรม', 'R003', 30, 'ชั้น 3 อาคารบริหาร', 'ห้องสำหรับการฝึกอบรมและสัมมนา', 'โปรเจคเตอร์, ระบบเสียง, เครื่องปรับอากาศ, Wi-Fi, คอมพิวเตอร์', '#f59e0b'),
+('ห้องประชุมกลาง', 'R004', 35, 'ชั้น 2 อาคารผู้ป่วยนอก', 'ห้องประชุมสำหรับการประชุมหลายแผนก', 'โปรเจคเตอร์, ระบบเสียง, เครื่องปรับอากาศ, Wi-Fi', '#8b5cf6');
 
 -- การตั้งค่าระบบเริ่มต้น
 INSERT INTO system_settings (setting_key, setting_value, description) VALUES

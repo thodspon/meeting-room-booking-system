@@ -3,6 +3,9 @@ session_start();
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
+// โหลดการตั้งค่าองค์กร
+$org_config = include 'config.php';
+
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -32,7 +35,7 @@ $last_day = date('Y-m-t', mktime(0, 0, 0, $current_month, 1, $current_year));
 
 // ดึงข้อมูลการจองในเดือนนี้
 $stmt = $pdo->prepare("
-    SELECT b.*, r.room_name, u.fullname 
+    SELECT b.*, r.room_name, r.room_code, r.room_color, u.fullname 
     FROM bookings b 
     JOIN rooms r ON b.room_id = r.room_id 
     JOIN users u ON b.user_id = u.user_id 
@@ -161,6 +164,13 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
                         ปฏิทินการจอง - <?php echo $thai_months[$current_month] . ' ' . ($current_year + 543); ?>
                     </h2>
                     <div class="flex gap-2">
+                        <a href="public_calendar.php" class="btn btn-success btn-sm" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            ปฏิทินสาธารณะ
+                        </a>
                         <a href="?month=<?php echo $prev_month; ?>&year=<?php echo $prev_year; ?>" 
                            class="btn btn-outline btn-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,16 +192,35 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
                 <!-- Legend -->
                 <div class="flex flex-wrap gap-4 mb-4 text-sm">
                     <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-green-200 rounded"></div>
-                        <span>อนุมัติแล้ว</span>
+                        <div class="w-4 h-4 bg-gray-600 rounded opacity-100"></div>
+                        <span>อนุมัติแล้ว (เต็มสี)</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-yellow-200 rounded"></div>
-                        <span>รออนุมัติ</span>
+                        <div class="w-4 h-4 bg-gray-600 rounded opacity-70"></div>
+                        <span>รออนุมัติ (จางลง)</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 bg-red-200 rounded"></div>
-                        <span>ไม่อนุมัติ</span>
+                        <div class="w-4 h-4 bg-gray-600 rounded opacity-50"></div>
+                        <span>ไม่อนุมัติ (จางมาก)</span>
+                    </div>
+                </div>
+                
+                <!-- Room Colors Legend -->
+                <?php
+                // Get all rooms with their colors
+                $rooms_stmt = $pdo->query("SELECT room_name, room_color FROM rooms ORDER BY room_name");
+                $rooms = $rooms_stmt->fetchAll();
+                ?>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm mb-2">สีห้องประชุม:</h4>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <?php foreach ($rooms as $room): ?>
+                            <div class="flex items-center gap-1">
+                                <div class="w-3 h-3 rounded-full border border-gray-300" 
+                                     style="background-color: <?php echo htmlspecialchars($room['room_color']); ?>"></div>
+                                <span><?php echo htmlspecialchars($room['room_name']); ?></span>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
@@ -226,11 +255,16 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
                             
                             <!-- Bookings for this day -->
                             <?php foreach ($day_bookings as $booking): ?>
-                                <div class="booking-item booking-<?php echo $booking['status']; ?>" 
-                                     title="<?php echo htmlspecialchars($booking['room_name'] . ' - ' . $booking['fullname'] . ' (' . date('H:i', strtotime($booking['start_time'])) . '-' . date('H:i', strtotime($booking['end_time'])) . ')', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo date('H:i', strtotime($booking['start_time'])); ?> 
-                                    <?php echo htmlspecialchars(mb_substr($booking['room_name'], 0, 10, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>
-                                    <?php if (mb_strlen($booking['room_name'], 'UTF-8') > 10) echo '...'; ?>
+                                <div class="booking-item" 
+                                     style="background-color: <?php echo htmlspecialchars($booking['room_color'] ?? '#3b82f6'); ?>; color: white; opacity: <?php echo $booking['status'] == 'approved' ? '1' : ($booking['status'] == 'pending' ? '0.7' : '0.5'); ?>;"
+                                     title="<?php echo htmlspecialchars($booking['room_name'] . ' - ' . $booking['fullname'] . ' (' . date('H:i', strtotime($booking['start_time'])) . '-' . date('H:i', strtotime($booking['end_time'])) . ') - สถานะ: ' . 
+                                     ($booking['status'] == 'approved' ? 'อนุมัติ' : ($booking['status'] == 'pending' ? 'รออนุมัติ' : 'ไม่อนุมัติ')), ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-2 h-2 rounded-full" style="background-color: <?php echo htmlspecialchars($booking['room_color'] ?? '#3b82f6'); ?>; border: 1px solid rgba(255,255,255,0.5);"></div>
+                                        <span><?php echo date('H:i', strtotime($booking['start_time'])); ?></span>
+                                        <span><?php echo htmlspecialchars(mb_substr($booking['room_name'], 0, 8, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <?php if (mb_strlen($booking['room_name'], 'UTF-8') > 8) echo '...'; ?>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
 
@@ -281,7 +315,13 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
                             <?php foreach ($today_bookings as $booking): ?>
                                 <tr>
                                     <td><?php echo date('H:i', strtotime($booking['start_time'])) . ' - ' . date('H:i', strtotime($booking['end_time'])); ?></td>
-                                    <td><?php echo htmlspecialchars($booking['room_name']); ?></td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 rounded-full border border-gray-300" 
+                                                 style="background-color: <?php echo htmlspecialchars($booking['room_color'] ?? '#3b82f6'); ?>"></div>
+                                            <?php echo htmlspecialchars($booking['room_name']); ?>
+                                        </div>
+                                    </td>
                                     <td><?php echo htmlspecialchars($booking['fullname']); ?></td>
                                     <td class="max-w-xs truncate"><?php echo htmlspecialchars($booking['purpose']); ?></td>
                                     <td>
