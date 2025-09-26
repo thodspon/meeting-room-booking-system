@@ -1,0 +1,33 @@
+# ไฟล์การตั้งค่าส่วนตัว
+config/database.php
+
+# ไฟล์ log และ cache
+*.log
+cache/
+logs/
+
+# ไฟล์ระบบปฏิบัติการ
+.DS_Store
+Thumbs.db
+
+# ไฟล์ IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ไฟล์ backup
+*.bak
+*.backup
+*~
+
+# ไฟล์อัพโหลด (ถ้ามี)
+uploads/*
+!uploads/.gitkeep
+
+# ไฟล์ทดสอบ
+test_*.php
+check_*.php
+
+# ไฟล์คำแนะนำ (ลบหลังอัพโหลด)
+GITHUB_UPLOAD_GUIDE.md

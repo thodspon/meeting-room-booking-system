@@ -1,0 +1,26 @@
+{
+    "name": "smd-meeting-room/booking-system",
+    "description": "ระบบจองห้องประชุมที่สามารถปรับเปลี่ยนชื่อองค์กรได้",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "tecnickcom/tcpdf": "^6.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "นายทศพล อุทก",
+            "email": "thodspon.u@kkumail.com",
+            "role": "นักวิชาการคอมพิวเตอร์ชำนาญการ",
+            "team": "Roi-et Digital Health Team"
+        }
+    ],
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

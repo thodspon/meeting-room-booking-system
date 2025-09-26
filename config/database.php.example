@@ -1,0 +1,30 @@
+<?php
+/**
+ * ไฟล์ตัวอย่างการตั้งค่าฐานข้อมูล
+ * คัดลอกไฟล์นี้เป็น database.php และแก้ไขค่าตามการตั้งค่าของคุณ
+ */
+
+// Set timezone for Thailand
+date_default_timezone_set('Asia/Bangkok');
+
+// Database configuration - กรุณาแก้ไขให้ตรงกับฐานข้อมูลของคุณ
+$host = 'localhost';         // ชื่อ host ของฐานข้อมูล
+$dbname = 'meeting_room_db'; // ชื่อฐานข้อมูล
+$username = 'root';          // ชื่อผู้ใช้ฐานข้อมูล
+$password = '';              // รหัสผ่านฐานข้อมูล
+$charset = 'utf8mb4';        // charset (แนะนำ utf8mb4)
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    
+    // Set MySQL timezone to match PHP timezone exactly
+    $pdo->exec("SET time_zone = '+07:00'");
+    
+    // Force sync timezone by setting session time
+    $pdo->exec("SET SESSION time_zone = '+07:00'");
+} catch(PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
+}
+?>
