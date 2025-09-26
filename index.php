@@ -106,6 +106,7 @@ foreach ($week_bookings as $booking) {
                     <li><a href="my_bookings.php" class="text-base-content">การจองของฉัน</a></li>
                     <li><a href="rooms.php" class="text-base-content">จัดการห้องประชุม</a></li>
                     <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
+                    <li><a href="user_activity.php" class="text-base-content">กิจกรรมผู้ใช้</a></li>
                     <li><a href="users.php" class="text-base-content">จัดการผู้ใช้</a></li>
                 </ul>
             </div>
@@ -124,6 +125,7 @@ foreach ($week_bookings as $booking) {
                 <li><a href="my_bookings.php">การจองของฉัน</a></li>
                 <li><a href="rooms.php">จัดการห้องประชุม</a></li>
                 <li><a href="reports.php">รายงาน</a></li>
+                <li><a href="user_activity.php">กิจกรรมผู้ใช้</a></li>
                 <li><a href="users.php">จัดการผู้ใช้</a></li>
             </ul>
         </div>

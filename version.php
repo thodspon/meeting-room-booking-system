@@ -10,9 +10,9 @@
  */
 
 // ข้อมูลเวอร์ชันปัจจุบัน
-define('SYSTEM_VERSION', '2.2');
+define('SYSTEM_VERSION', '2.3');
 define('SYSTEM_BUILD', '20250926');
-define('SYSTEM_CODENAME', 'Color Edition Pro');
+define('SYSTEM_CODENAME', 'Enhanced Edition Pro');
 
 // ข้อมูลผู้พัฒนา
 define('DEVELOPER_NAME', 'นายทศพล อุทก');
@@ -31,6 +31,52 @@ define('SYSTEM_ORGANIZATION', getOrganizationName());
  * ประวัติการพัฒนาระบบ
  */
 $version_history = [
+    '2.3' => [
+        'date' => '2025-09-26',
+        'title' => 'Enhanced Edition Pro - Font & UI Improvements + Public Access',
+        'features' => [
+            'ปรับปรุงฟอนต์ไทยทั้งระบบ - ใช้ Sarabun + Prompt สำหรับการแสดงผลที่สวยงาม',
+            'แก้ไขปัญหาการแสดงรายละเอียดการจองใน my_bookings.php',
+            'ปรับปรุง Modal การแสดงข้อมูลการจองให้ครบถ้วนและสวยงาม',
+            'เพิ่มปุ่ม "ดูปฏิทินการจองสาธารณะ" ในหน้า Login',
+            'เพิ่มหน้า User Activity (user_activity.php) - รายงานกิจกรรมผู้ใช้งานแบบครบถ้วน',
+            'ระบบติดตามกิจกรรม: สร้างการจอง, อนุมัติ, ยกเลิก พร้อมสถิติแบบเรียลไทม์',
+            'ปรับปรุงการจัดการข้อมูลใน JavaScript ให้เสถียรมากขึ้น',
+            'เพิ่มระบบ Debug logging สำหรับตรวจสอบปัญหา',
+            'ปรับปรุงการแสดงผลในหน้า Reports และ Telegram Settings'
+        ],
+        'font_improvements' => [
+            'ใช้ Google Fonts: Sarabun (300,400,500,600,700) และ Prompt (300,400,500,600,700)',
+            'ตั้งค่า font-family hierarchy ที่เหมาะสมสำหรับภาษาไทย',
+            'ปรับ line-height เป็น 1.6 สำหรับการอ่านที่สบายตา',
+            'แยกฟอนต์สำหรับส่วนต่างๆ: Sarabun สำหรับเนื้อหา, Prompt สำหรับหัวข้อ',
+            'เพิ่ม font-feature-settings สำหรับ ligature ที่สวยงาม',
+            'ปรับปรุง Typography ให้มีความสอดคล้องทั้งระบบ'
+        ],
+        'bug_fixes' => [
+            'แก้ไขปัญหา undefined variable $org_config ใน my_bookings.php',
+            'แก้ไขปัญหาการส่งข้อมูล JSON ใน onclick attributes',
+            'ปรับปรุงการจัดการ Modal ให้แสดงข้อมูลได้ถูกต้อง',
+            'แก้ไขปัญหาการโหลดไฟล์ config.php และ version.php',
+            'ปรับปรุงการ handle errors ใน JavaScript functions',
+            'แก้ไขปัญหาการแสดงผลวันที่และเวลาในภาษาไทย'
+        ],
+        'ui_enhancements' => [
+            'ปรับปรุงหน้า Login ให้มีปุ่มเข้าถึงปฏิทินสาธารณะ',
+            'เพิ่ม hover effects และ transition animations',
+            'ปรับปรุง Modal design ให้สวยงามและใช้งานง่าย',
+            'เพิ่ม backdrop blur effect ให้ Login card',
+            'ปรับปรุงการจัดวาง Layout ให้เป็นระเบียบมากขึ้น',
+            'เพิ่มไอคอนและคำอธิบายที่ชัดเจน'
+        ],
+        'accessibility_improvements' => [
+            'เพิ่มปุ่มเข้าถึงปฏิทินสาธารณะโดยไม่ต้อง Login',
+            'ปรับปรุงการแสดงข้อมูลให้ชัดเจนและครบถ้วน',
+            'เพิ่มคำอธิบายและ tooltips ที่เป็นประโยชน์',
+            'ปรับปรุงการนำทาง (Navigation) ให้ใช้งานง่าย',
+            'เพิ่มการตรวจสอบข้อมูลก่อนแสดงผล'
+        ]
+    ],
     '2.2' => [
         'date' => '2025-09-26',
         'title' => 'Color Edition Pro - Visual Enhancement & Real-time Features',

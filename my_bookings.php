@@ -1,7 +1,11 @@
 <?php
 session_start();
 require_once 'config/database.php';
+require_once 'config.php';
 require_once 'includes/functions.php';
+
+// Get organization config
+$org_config = getOrganizationConfig();
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
@@ -13,7 +17,7 @@ $user_id = $_SESSION['user_id'];
 
 // ดึงการจองของผู้ใช้
 $stmt = $pdo->prepare("
-    SELECT b.*, r.room_name, r.location, a.fullname as approved_by_name
+    SELECT b.*, r.room_name, r.location, r.capacity, a.fullname as approved_by_name
     FROM bookings b 
     JOIN rooms r ON b.room_id = r.room_id 
     LEFT JOIN users a ON b.approved_by = a.user_id
@@ -33,16 +37,67 @@ $my_bookings = $stmt->fetchAll();
     <title>การจองของฉัน - ระบบจองห้องประชุม</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Thai Font Support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        * {
-            font-family: 'Prompt', sans-serif;
+        body, html {
+            font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-feature-settings: "liga";
+            font-feature-settings: "liga";
+        }
+        
+        .thai-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .card-title, .stat-title {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .btn {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        .label-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        .navbar {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+        }
+        
+        .breadcrumbs {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .table th, .table td {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .badge {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        .modal-box {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
         }
     </style>
 </head>
-<body>
+<body class="thai-text">
     <!-- Navbar -->
     <div class="navbar bg-primary text-primary-content">
         <div class="navbar-start">
@@ -203,7 +258,7 @@ $my_bookings = $stmt->fetchAll();
                                         <td>
                                             <div class="flex gap-1">
                                                 <!-- ปุ่มดูรายละเอียด -->
-                                                <button onclick="showBookingDetails(<?php echo htmlspecialchars(json_encode($booking), ENT_QUOTES, 'UTF-8'); ?>)" 
+                                                <button onclick="showBookingDetails(<?php echo $booking['booking_id']; ?>)" 
                                                         class="btn btn-info btn-xs">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -265,7 +320,10 @@ $my_bookings = $stmt->fetchAll();
     </div>
 
     <!-- Footer -->
-    <?php require_once 'version.php'; echo getSystemFooter(); ?>
+    <?php 
+    require_once 'version.php'; 
+    echo getSystemFooter(); 
+    ?>
 
     <!-- Modal สำหรับดูรายละเอียดการจอง -->
     <dialog id="booking_details_modal" class="modal">
@@ -299,7 +357,22 @@ $my_bookings = $stmt->fetchAll();
     </dialog>
 
     <script>
-        function showBookingDetails(booking) {
+        // เก็บข้อมูลการจองทั้งหมดไว้ใน JavaScript
+        const bookingsData = <?php echo json_encode($my_bookings); ?>;
+        
+        function showBookingDetails(bookingId) {
+            console.log('Booking ID:', bookingId); // Debug log
+            
+            // หาข้อมูลการจองจาก booking ID
+            const booking = bookingsData.find(b => b.booking_id == bookingId);
+            
+            if (!booking) {
+                alert('ไม่พบข้อมูลการจอง');
+                return;
+            }
+            
+            console.log('Booking data:', booking); // Debug log
+            
             const thaiDays = {
                 'Sunday': 'อาทิตย์', 'Monday': 'จันทร์', 'Tuesday': 'อังคาร',
                 'Wednesday': 'พุธ', 'Thursday': 'พฤหัสบดี', 'Friday': 'ศุกร์', 'Saturday': 'เสาร์'
@@ -319,36 +392,63 @@ $my_bookings = $stmt->fetchAll();
                 'cancelled': 'badge-neutral'
             };
             
-            const bookingDate = new Date(booking.booking_date);
-            const dayName = bookingDate.toLocaleDateString('en-US', { weekday: 'long' });
+            // Format date safely
+            let formattedDate = booking.booking_date || '-';
+            let dayName = '';
+            try {
+                const bookingDate = new Date(booking.booking_date);
+                if (!isNaN(bookingDate.getTime())) {
+                    dayName = bookingDate.toLocaleDateString('en-US', { weekday: 'long' });
+                    // Format Thai date
+                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    formattedDate = bookingDate.toLocaleDateString('th-TH', options);
+                }
+            } catch (e) {
+                console.error('Date parsing error:', e);
+            }
+            
+            // Format time safely
+            const startTime = booking.start_time ? booking.start_time.substring(0, 5) : '-';
+            const endTime = booking.end_time ? booking.end_time.substring(0, 5) : '-';
             
             const content = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">รหัสการจอง</span></label>
+                        <div class="text-lg font-mono text-primary">#${booking.booking_id || '-'}</div>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">สถานะ</span></label>
+                        <div class="badge ${statusClass[booking.status] || 'badge-neutral'} badge-lg">${statusText[booking.status] || booking.status}</div>
+                    </div>
+                    
+                    <div class="form-control">
                         <label class="label"><span class="label-text font-semibold">วันที่จอง</span></label>
-                        <div class="text-lg">${booking.booking_date_formatted || booking.booking_date}</div>
+                        <div class="text-lg">${formattedDate}</div>
                         <div class="text-sm opacity-70">${thaiDays[dayName] || dayName}</div>
                     </div>
                     
                     <div class="form-control">
                         <label class="label"><span class="label-text font-semibold">เวลา</span></label>
-                        <div class="text-lg font-mono">${booking.start_time.substring(0, 5)} - ${booking.end_time.substring(0, 5)}</div>
+                        <div class="text-lg font-mono">${startTime} - ${endTime}</div>
                     </div>
                     
                     <div class="form-control">
                         <label class="label"><span class="label-text font-semibold">ห้องประชุม</span></label>
-                        <div class="text-lg">${booking.room_name}</div>
+                        <div class="text-lg font-semibold">${booking.room_name || '-'}</div>
                         <div class="text-sm opacity-70">${booking.location || ''}</div>
+                        ${booking.capacity ? `<div class="text-sm opacity-70">จุได้ ${booking.capacity} คน</div>` : ''}
                     </div>
                     
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-semibold">สถานะ</span></label>
-                        <div class="badge ${statusClass[booking.status]} badge-lg">${statusText[booking.status]}</div>
+                        <label class="label"><span class="label-text font-semibold">ผู้อนุมัติ</span></label>
+                        <div class="text-lg">${booking.approved_by_name || 'ยังไม่ได้อนุมัติ'}</div>
                     </div>
                     
                     <div class="form-control md:col-span-2">
                         <label class="label"><span class="label-text font-semibold">วัตถุประสงค์</span></label>
-                        <div class="text-base bg-base-200 p-3 rounded">${booking.purpose}</div>
+                        <div class="text-base bg-base-200 p-3 rounded">${booking.purpose || '-'}</div>
                     </div>
                     
                     <div class="form-control">
@@ -357,19 +457,26 @@ $my_bookings = $stmt->fetchAll();
                     </div>
                     
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-semibold">ผู้อนุมัติ</span></label>
-                        <div class="text-lg">${booking.approved_by_name || '-'}</div>
+                        <label class="label"><span class="label-text font-semibold">อุปกรณ์เสริม</span></label>
+                        <div class="text-lg">${booking.equipment || 'ไม่ระบุ'}</div>
                     </div>
                     
                     <div class="form-control">
                         <label class="label"><span class="label-text font-semibold">วันที่สร้าง</span></label>
-                        <div class="text-sm">${booking.created_at}</div>
+                        <div class="text-sm">${booking.created_at || '-'}</div>
                     </div>
                     
                     <div class="form-control">
                         <label class="label"><span class="label-text font-semibold">อัปเดตล่าสุด</span></label>
                         <div class="text-sm">${booking.updated_at || '-'}</div>
                     </div>
+                    
+                    ${booking.notes ? `
+                    <div class="form-control md:col-span-2">
+                        <label class="label"><span class="label-text font-semibold">หมายเหตุ</span></label>
+                        <div class="text-base bg-base-200 p-3 rounded">${booking.notes}</div>
+                    </div>
+                    ` : ''}
                 </div>
             `;
             

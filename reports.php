@@ -176,6 +176,7 @@ function exportToExcel($bookings, $start_date, $end_date) {
 
 // ฟังก์ชัน HTML-to-PDF (แทน TCPDF เพื่อหลีกเลี่ยงปัญหาฟอนต์)
 function exportHTMLToPDF($bookings, $start_date, $end_date) {
+    $org_config = getOrganizationConfig();
     // สร้าง HTML content
     ob_clean();
     ?>
@@ -276,7 +277,7 @@ function exportHTMLToPDF($bookings, $start_date, $end_date) {
     <div class="footer">
         <p>พิมพ์เมื่อ: <?php echo formatThaiDate(date('Y-m-d'), 'full'); ?> เวลา <?php echo date('H:i'); ?> น.</p>
         <p>จำนวนรายการทั้งหมด: <?php echo count($bookings); ?> รายการ</p>
-        <p><?= $org_config['sub_title'] ?> - <?= $org_config['name'] ?></p>
+        <p class="font-medium"><?= $org_config['sub_title'] ?> - <?= $org_config['name'] ?></p>
     </div>
     
     <script>
@@ -443,19 +444,63 @@ $org_config = getOrganizationConfig();
     <title>รายงาน - ระบบจองห้องประชุม</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Thai Font Support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        * {
-            font-family: 'Prompt', sans-serif;
-        }
-        
-        /* เพิ่ม CSS สำหรับการแสดงผลภาษาไทย */
         body, html {
-            font-family: 'Prompt', 'Sarabun', 'Angsana New', sans-serif;
+            font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-font-feature-settings: "liga";
             font-feature-settings: "liga";
+        }
+        
+        .thai-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .card-title, .stat-title {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .btn {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        .label-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .navbar {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+        }
+        
+        .breadcrumbs {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .table th, .table td {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .badge {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
         }
         
         .table th, .table td {

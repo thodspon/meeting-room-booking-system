@@ -7,19 +7,54 @@
     <title>เข้าสู่ระบบ - <?= $org_config['name'] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Thai Font Support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        * {
-            font-family: 'Prompt', sans-serif;
+        body, html {
+            font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-feature-settings: "liga";
+            font-feature-settings: "liga";
         }
+        
+        .thai-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .btn {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        .label-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
         .bg-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+        
+        .card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
     </style>
 </head>
-<body class="bg-gradient min-h-screen flex items-center justify-center">
+<body class="bg-gradient min-h-screen flex items-center justify-center thai-text">
     <div class="card w-full max-w-md bg-base-100 shadow-2xl">
         <div class="card-body">
             <div class="text-center mb-6">
@@ -128,8 +163,29 @@
 
             <div class="divider">หรือ</div>
 
-            <div class="text-center">
-                <a href="forgot_password.php" class="link link-primary">ลืมรหัสผ่าน?</a>
+            <div class="flex flex-col gap-3">
+                <!-- ปุ่มดูการจองสาธารณะ -->
+                <a href="public_calendar.php" class="btn btn-outline btn-info hover:btn-info transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    ดูปฏิทินการจองสาธารณะ
+                </a>
+                
+                <!-- ข้อมูลเพิ่มเติมเกี่ยวกับปุ่มสาธารณะ -->
+                <div class="text-center">
+                    <p class="text-xs text-base-content/60 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        ดูปฏิทินการจองได้โดยไม่ต้องเข้าสู่ระบบ
+                    </p>
+                </div>
+                
+                <!-- ลิงก์ลืมรหัสผ่าน -->
+                <div class="text-center">
+                    <a href="forgot_password.php" class="link link-primary">ลืมรหัสผ่าน?</a>
+                </div>
             </div>
 
             <div class="text-center mt-4">

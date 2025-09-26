@@ -112,8 +112,68 @@ $page_title = 'ตั้งค่า Telegram';
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Thai Font Support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .thai-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .card-title {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            font-weight: 600;
+        }
+        
+        .btn {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        .label-text {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .navbar {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+        }
+        
+        .breadcrumbs {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        .alert {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-base-200">
+<body class="min-h-screen bg-base-200 thai-text">
     <!-- Navigation -->
     <div class="navbar bg-primary text-primary-content shadow-lg">
         <div class="flex-1">
