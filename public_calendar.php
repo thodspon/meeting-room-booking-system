@@ -37,7 +37,7 @@ try {
     $end_date = date('Y-m-t', $first_day);
     
     $stmt = $pdo->prepare("
-        SELECT b.*, r.room_name, r.room_code, r.room_color, u.fullname 
+        SELECT b.*, r.room_name, r.room_code, r.room_color, u.fullname, u.department 
         FROM bookings b 
         JOIN rooms r ON b.room_id = r.room_id 
         JOIN users u ON b.user_id = u.user_id
@@ -365,7 +365,7 @@ $org_config = getOrganizationConfig();
                                 $tooltip = "🏢 ห้อง: " . $booking['room_name'] . "\n" .
                                           "⏰ เวลา: " . $start_time_thai . " - " . $end_time_thai . "\n" .
                                           "👤 ผู้จอง: " . $booking['fullname'] . "\n" .
-                                          "🏛️ แผนก: " . $booking['department'] . "\n" .
+                                          "🏛️ หน่วยงาน: " . $booking['department'] . "\n" .
                                           "📝 วัตถุประสงค์: " . mb_substr($booking['purpose'], 0, 50, 'UTF-8') . 
                                           (mb_strlen($booking['purpose'], 'UTF-8') > 50 ? '...' : '') . "\n" .
                                           "👥 จำนวนผู้เข้าร่วม: " . $booking['attendees'] . " คน\n" .
@@ -476,7 +476,7 @@ $org_config = getOrganizationConfig();
                     .replace(/🏢 ห้อง: (.+)/g, '<div class="font-bold text-primary mb-1">🏢 $1</div>')
                     .replace(/⏰ เวลา: (.+)/g, '<div class="text-accent mb-1">⏰ $1</div>')
                     .replace(/👤 ผู้จอง: (.+)/g, '<div class="mb-1">👤 $1</div>')
-                    .replace(/🏛️ แผนก: (.+)/g, '<div class="mb-1">🏛️ $1</div>')
+                    .replace(/🏛️ หน่วยงาน: (.+)/g, '<div class="mb-1 text-secondary">🏛️ $1</div>')
                     .replace(/📝 วัตถุประสงค์: (.+)/g, '<div class="mb-1">📝 $1</div>')
                     .replace(/👥 จำนวนผู้เข้าร่วม: (.+)/g, '<div class="mb-1">👥 $1</div>')
                     .replace(/✅ สถานะ: (.+)/g, '<div class="font-semibold text-success mb-1">✅ $1</div>')
