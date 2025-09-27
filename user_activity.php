@@ -31,91 +31,58 @@ $stmt = $pdo->prepare("SELECT user_id, fullname, department, role FROM users WHE
 $stmt->execute();
 $users = $stmt->fetchAll();
 
-// สร้าง Query สำหรับรายงานกิจกรรม
-$sql = "
+// สร้าง Query สำหรับรายงานกิจกรรม - แบบง่าย
+$base_sql = "
     SELECT 
         'booking_created' as activity_type,
         b.created_at as activity_date,
         u.fullname as user_name,
         u.department,
         u.role,
-        CONCAT('สร้างการจอง: ', r.room_name, ' วันที่ ', DATE_FORMAT(b.booking_date, '%d/%m/%Y'), ' เวลา ', TIME_FORMAT(b.start_time, '%H:%i'), '-', TIME_FORMAT(b.end_time, '%H:%i')) as activity_description,
+        CONCAT('สร้างการจอง: ', r.room_name, ' วันที่ ', b.booking_date) as activity_description,
         b.booking_id as reference_id,
         'booking' as reference_type
     FROM bookings b 
     JOIN users u ON b.user_id = u.user_id 
     JOIN rooms r ON b.room_id = r.room_id
     WHERE DATE(b.created_at) BETWEEN ? AND ?
-    
-    UNION ALL
-    
-    SELECT 
-        'booking_approved' as activity_type,
-        b.updated_at as activity_date,
-        u.fullname as user_name,
-        u.department,
-        u.role,
-        CONCAT('อนุมัติการจอง: ', r.room_name, ' ของ ', user_req.fullname, ' วันที่ ', DATE_FORMAT(b.booking_date, '%d/%m/%Y')) as activity_description,
-        b.booking_id as reference_id,
-        'approval' as reference_type
-    FROM bookings b 
-    JOIN users u ON b.approved_by = u.user_id 
-    JOIN users user_req ON b.user_id = user_req.user_id
-    JOIN rooms r ON b.room_id = r.room_id
-    WHERE b.status = 'approved' AND DATE(b.updated_at) BETWEEN ? AND ?
-    
-    UNION ALL
-    
-    SELECT 
-        'booking_cancelled' as activity_type,
-        b.updated_at as activity_date,
-        u.fullname as user_name,
-        u.department,
-        u.role,
-        CONCAT('ยกเลิกการจอง: ', r.room_name, ' วันที่ ', DATE_FORMAT(b.booking_date, '%d/%m/%Y')) as activity_description,
-        b.booking_id as reference_id,
-        'cancellation' as reference_type
-    FROM bookings b 
-    JOIN users u ON b.user_id = u.user_id 
-    JOIN rooms r ON b.room_id = r.room_id
-    WHERE b.status = 'cancelled' AND DATE(b.updated_at) BETWEEN ? AND ?
 ";
 
-$params = [$start_date, $end_date, $start_date, $end_date, $start_date, $end_date];
+$params = [$start_date, $end_date];
 
 // เพิ่มเงื่อนไขกรองผู้ใช้
 if ($user_id_filter) {
-    $sql = "
-        SELECT * FROM (
-            " . $sql . "
-        ) as activities 
-        WHERE activities.user_name IN (
-            SELECT fullname FROM users WHERE user_id = ?
-        )
-    ";
+    $base_sql .= " AND b.user_id = ?";
     $params[] = $user_id_filter;
 }
 
-// เพิ่มเงื่อนไขกรองประเภทกิจกรรม
-if ($activity_type) {
-    if ($user_id_filter) {
-        $sql .= " AND activities.activity_type = ?";
-    } else {
-        $sql = "
-            SELECT * FROM (
-                " . $sql . "
-            ) as activities 
-            WHERE activities.activity_type = ?
-        ";
-    }
-    $params[] = $activity_type;
+// เพิ่มเงื่อนไขกรองประเภทกิจกรรม - สำหรับ booking_created เท่านั้นในตอนนี้
+if ($activity_type && $activity_type !== 'booking_created') {
+    // ถ้าไม่ต้องการ booking_created ให้ใช้ query ว่าง
+    $base_sql = "SELECT NULL as activity_type, NULL as activity_date, NULL as user_name, 
+                 NULL as department, NULL as role, NULL as activity_description, 
+                 NULL as reference_id, NULL as reference_type WHERE 1=0";
+    $params = [];
 }
 
-$sql .= " ORDER BY activity_date DESC LIMIT 200";
+$base_sql .= " ORDER BY b.created_at DESC LIMIT 200";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$activities = $stmt->fetchAll();
+try {
+    $stmt = $pdo->prepare($base_sql);
+    $stmt->execute($params);
+    $activities = $stmt->fetchAll();
+    
+    // Debug: ตรวจสอบจำนวนการจองทั้งหมดในระบบ
+    $debug_stmt = $pdo->prepare("SELECT COUNT(*) as total_bookings FROM bookings WHERE DATE(created_at) BETWEEN ? AND ?");
+    $debug_stmt->execute([$start_date, $end_date]);
+    $debug_info = $debug_stmt->fetch();
+    
+} catch (PDOException $e) {
+    // Debug: แสดงข้อผิดพลาด
+    error_log("SQL Error in user_activity.php: " . $e->getMessage());
+    $activities = [];
+    $debug_info = ['total_bookings' => 0];
+}
 
 // สถิติกิจกรรม
 $stats = [
@@ -125,27 +92,43 @@ $stats = [
     'booking_cancelled' => count(array_filter($activities, fn($a) => $a['activity_type'] === 'booking_cancelled'))
 ];
 
-// สถิติผู้ใช้ที่ใช้งานมากที่สุด
-$user_stats_sql = "
-    SELECT 
-        u.fullname,
-        u.department,
-        COUNT(*) as total_activities,
-        SUM(CASE WHEN activity_type = 'booking_created' THEN 1 ELSE 0 END) as bookings_created,
-        SUM(CASE WHEN activity_type = 'booking_approved' THEN 1 ELSE 0 END) as bookings_approved,
-        SUM(CASE WHEN activity_type = 'booking_cancelled' THEN 1 ELSE 0 END) as bookings_cancelled
-    FROM (
-        " . str_replace($params, array_fill(0, 6, '?'), $sql) . "
-    ) as activities
-    JOIN users u ON u.fullname = activities.user_name
-    GROUP BY u.fullname, u.department
-    ORDER BY total_activities DESC
-    LIMIT 10
-";
-
-$stmt = $pdo->prepare($user_stats_sql);
-$stmt->execute(array_slice($params, 0, 6)); // ใช้เฉพาะ 6 parameters แรก
-$user_stats = $stmt->fetchAll();
+// สถิติผู้ใช้ที่ใช้งานมากที่สุด - แบบง่าย
+try {
+    $user_stats_sql = "
+        SELECT 
+            u.fullname,
+            u.department,
+            COUNT(b.booking_id) as total_activities,
+            COUNT(b.booking_id) as bookings_created,
+            0 as bookings_approved,
+            0 as bookings_cancelled
+        FROM users u
+        LEFT JOIN bookings b ON u.user_id = b.user_id 
+        WHERE u.is_active = 1 
+        AND (b.created_at IS NULL OR DATE(b.created_at) BETWEEN ? AND ?)
+    ";
+    
+    $stats_params = [$start_date, $end_date];
+    
+    if ($user_id_filter) {
+        $user_stats_sql .= " AND u.user_id = ?";
+        $stats_params[] = $user_id_filter;
+    }
+    
+    $user_stats_sql .= "
+        GROUP BY u.user_id, u.fullname, u.department
+        HAVING total_activities > 0
+        ORDER BY total_activities DESC
+        LIMIT 10
+    ";
+    
+    $stmt = $pdo->prepare($user_stats_sql);
+    $stmt->execute($stats_params);
+    $user_stats = $stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log("User Stats SQL Error: " . $e->getMessage());
+    $user_stats = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -430,12 +413,57 @@ $user_stats = $stmt->fetchAll();
                             </button>
                         </div>
 
+                        <!-- Debug Info -->
+                        <div class="alert alert-info mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <div class="text-sm">
+                                    <strong>Debug Info:</strong> ช่วงเวลา: <?= $start_date ?> ถึง <?= $end_date ?> 
+                                    | การจองทั้งหมด: <?= $debug_info['total_bookings'] ?? 0 ?> รายการ
+                                    | กิจกรรมที่แสดง: <?= count($activities) ?> รายการ
+                                    | ผู้ใช้: <?= count($users) ?> คน
+                                    <?php if ($user_id_filter): ?>| กรองผู้ใช้: ID <?= $user_id_filter ?><?php endif; ?>
+                                    <?php if ($activity_type): ?>| กรองประเภท: <?= $activity_type ?><?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php 
+                        // เพิ่มข้อมูลตัวอย่างเพื่อทดสอบหากไม่มีข้อมูลจริง
+                        if (empty($activities) && isset($_GET['test'])) {
+                            $activities = [
+                                [
+                                    'activity_type' => 'booking_created',
+                                    'activity_date' => date('Y-m-d H:i:s'),
+                                    'user_name' => 'ทดสอบ ระบบ',
+                                    'department' => 'IT',
+                                    'role' => 'admin',
+                                    'activity_description' => 'สร้างการจอง: ห้องประชุมใหญ่ วันที่ ' . date('d/m/Y'),
+                                    'reference_id' => '999',
+                                    'reference_type' => 'booking'
+                                ]
+                            ];
+                        }
+                        ?>
+                        
                         <?php if (empty($activities)): ?>
                             <div class="text-center py-8">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <p class="text-gray-500 text-lg">ไม่พบกิจกรรมในช่วงเวลาที่เลือก</p>
+                                <p class="text-gray-400 text-sm mt-2">
+                                    ลองปรับช่วงเวลาให้กว้างขึ้น หรือตรวจสอบว่ามีการจองในระบบหรือไม่
+                                </p>
+                                <a href="?test=1&start_date=<?= $start_date ?>&end_date=<?= $end_date ?>" 
+                                   class="btn btn-outline btn-sm mt-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                    ทดสอบแสดงข้อมูลตัวอย่าง
+                                </a>
                             </div>
                         <?php else: ?>
                             <div class="space-y-4 max-h-96 overflow-y-auto">

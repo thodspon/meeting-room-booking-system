@@ -10,9 +10,9 @@
  */
 
 // ข้อมูลเวอร์ชันปัจจุบัน
-define('SYSTEM_VERSION', '2.3');
+define('SYSTEM_VERSION', '2.4');
 define('SYSTEM_BUILD', '20250926');
-define('SYSTEM_CODENAME', 'Enhanced Edition Pro');
+define('SYSTEM_CODENAME', 'Security Edition Pro');
 
 // ข้อมูลผู้พัฒนา
 define('DEVELOPER_NAME', 'นายทศพล อุทก');
@@ -31,6 +31,50 @@ define('SYSTEM_ORGANIZATION', getOrganizationName());
  * ประวัติการพัฒนาระบบ
  */
 $version_history = [
+    '2.4' => [
+        'date' => '2025-09-26',
+        'title' => 'Security Edition Pro - Password Reset System via Telegram',
+        'features' => [
+            'ระบบรีเซ็ตรหัสผ่านผ่าน Telegram - ส่งรหัส 6 หลักแบบปลอดภัย',
+            'หน้า Forgot Password (forgot_password.php) - UI/UX สวยงามแบบ 3 ขั้นตอน',
+            'ระบบ Password Reset Handler (reset_password.php) - จัดการข้อมูลอย่างปลอดภัย',
+            'ตาราง password_resets - เก็บรหัสรีเซ็ตพร้อม expire time 15 นาที',
+            'ระบบ Cleanup Script - ลบข้อมูลรีเซ็ตที่หมดอายุอัตโนมัติ',
+            'การแจ้งเตือนผ่าน Telegram - ทั้งขอรหัสและยืนยันการเปลี่ยน',
+            'ฟังก์ชัน Telegram Config - จัดการการตั้งค่าผู้ใช้และระบบ'
+        ],
+        'security_features' => [
+            'รหัสรีเซ็ต 6 หลัก - สุ่มใหม่ทุกครั้ง ป้องกันการเดา',
+            'หมดอายุอัตโนมัติ - รหัสใช้ได้เฉพาะ 15 นาที',
+            'One-time Use - ใช้ได้ครั้งเดียว ป้องกันการใช้ซ้ำ',
+            'Database Transaction - ป้องกันข้อมูลเสียหาย',
+            'Error Logging - บันทึกข้อผิดพลาดเพื่อตรวจสอบ',
+            'Input Validation - ตรวจสอบข้อมูลอย่างเข้มงวด'
+        ],
+        'telegram_integration' => [
+            'ส่งรหัสรีเซ็ตผ่าน Telegram Bot อัตโนมัติ',
+            'แจ้งเตือนเมื่อเปลี่ยนรหัสผ่านสำเร็จ',
+            'รองรับการตั้งค่า Telegram ส่วนตัวและระบบ',
+            'ข้อความภาษาไทยที่สวยงามพร้อม Emoji',
+            'การจัดรูปแบบข้อความแบบ HTML',
+            'ระบบ Fallback - ลองส่งหลายช่องทางถ้าไม่สำเร็จ'
+        ],
+        'ui_improvements' => [
+            '3-Step Progress Indicator - แสดงขั้นตอนอย่างชัดเจน',
+            'Responsive Design - ใช้งานได้ทุกอุปกรณ์',
+            'Loading States - แสดงสถานะการประมวลผล',
+            'Form Validation - ตรวจสอบข้อมูลแบบเรียลไทม์',
+            'Success/Error Messages - ข้อความแจ้งเตือนที่ชัดเจน',
+            'Auto-focus และ UX Enhancements'
+        ],
+        'maintenance_features' => [
+            'Cleanup Script - ลบข้อมูลเก่าอัตโนมัติ',
+            'Database Optimization - Index และ Foreign Key',
+            'Error Handling - จัดการข้อผิดพลาดอย่างมีประสิทธิภาพ',
+            'Logging System - บันทึกกิจกรรมสำคัญ',
+            'AJAX Support - รองรับการส่งข้อมูลแบบไม่รีเฟรช'
+        ]
+    ],
     '2.3' => [
         'date' => '2025-09-26',
         'title' => 'Enhanced Edition Pro - Font & UI Improvements + Public Access',

@@ -1,16 +1,23 @@
 <?php
-// ตั้งค่า UTF-8 encoding
+// ตั้งค่า UTF-8 encoding และ error reporting
 header('Content-Type: text/html; charset=UTF-8');
 mb_internal_encoding('UTF-8');
 ini_set('default_charset', 'UTF-8');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 session_start();
-require_once 'config/database.php';
-require_once 'config.php';
-require_once 'includes/functions.php';
 
-// ดึงข้อมูลองค์กร
-$org_config = getOrganizationConfig();
+try {
+    require_once 'config/database.php';
+    require_once 'config.php';
+    require_once 'includes/functions.php';
+    
+    // ดึงข้อมูลองค์กร
+    $org_config = getOrganizationConfig();
+} catch (Exception $e) {
+    die('เกิดข้อผิดพลาดในการโหลดระบบ: ' . $e->getMessage());
+}
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {

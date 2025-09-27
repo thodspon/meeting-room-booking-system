@@ -3,8 +3,8 @@
 date_default_timezone_set('Asia/Bangkok');
 
 // Telegram configuration - กรุณาแก้ไขให้ตรงกับ Bot ของคุณ
-define('TELEGRAM_TOKEN', '');
-define('TELEGRAM_CHAT_ID', '');
+define('TELEGRAM_TOKEN', '8293088704:AAGFTG5djH-eNgmf9nKir0x4tzB0L6td8Yg');
+define('TELEGRAM_CHAT_ID', '6124231421');
 
 /**
  * Send message to Telegram (ใช้การตั้งค่าเดิม)
@@ -282,4 +282,10 @@ function generatePassword($length = 8) {
     $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     return substr(str_shuffle($chars), 0, $length);
 }
+
+
+
+
+
+
 ?>
