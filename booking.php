@@ -107,11 +107,7 @@ $rooms = $stmt->fetchAll();
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="rooms.php" class="text-base-content">จัดการห้องประชุม</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
-                    <li><a href="users.php" class="text-base-content">จัดการผู้ใช้</a></li>
+                    <?= generateNavigation('booking', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
             <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
@@ -123,11 +119,7 @@ $rooms = $stmt->fetchAll();
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php" class="active">จองห้องประชุม</a></li>
-                <li><a href="rooms.php">จัดการห้องประชุม</a></li>
-                <li><a href="reports.php">รายงาน</a></li>
-                <li><a href="users.php">จัดการผู้ใช้</a></li>
+                <?= generateNavigation('booking', $_SESSION['role'] ?? 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">

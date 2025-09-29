@@ -1,12 +1,12 @@
 <?php
 session_start();
-require_once 'config/database.php';
-require_once 'config.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 }
 
@@ -183,9 +183,9 @@ $page_title = 'การจองห้อง: ' . $room['room_name'];
                     <?= generateNavigation('rooms', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
-            <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
-                <?php if (file_exists($org_config['logo_path'])): ?>
-                    <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
+            <a class="btn btn-ghost text-xl flex items-center gap-2" href="../index.php">
+                <?php if (file_exists('../' . $org_config['logo_path'])): ?>
+                    <img src="../<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
                 <?= $org_config['sub_title'] ?>
             </a>
@@ -225,7 +225,7 @@ $page_title = 'การจองห้อง: ' . $room['room_name'];
     <div class="container mx-auto p-4">
         <div class="breadcrumbs text-sm mb-4">
             <ul>
-                <li><a href="index.php">หน้าหลัก</a></li>
+                <li><a href="../index.php">หน้าหลัก</a></li>
                 <li><a href="rooms.php">จัดการห้องประชุม</a></li>
                 <li>การจองห้อง: <?= htmlspecialchars($room['room_name']) ?></li>
             </ul>
@@ -480,7 +480,7 @@ $page_title = 'การจองห้อง: ' . $room['room_name'];
                                                 
                                                 <!-- ปุ่มอนุมัติ/ไม่อนุมัติ (สำหรับ admin และ pending status) -->
                                                 <?php if ($booking['status'] == 'pending' && checkPermission($pdo, $_SESSION['user_id'], 'approve_bookings')): ?>
-                                                    <a href="approve_booking.php?id=<?= $booking['booking_id'] ?>&action=approve" 
+                                                    <a href="../approve_booking.php?id=<?= $booking['booking_id'] ?>&action=approve" 
                                                        class="btn btn-success btn-xs"
                                                        onclick="return confirm('อนุมัติการจองนี้?')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -488,7 +488,7 @@ $page_title = 'การจองห้อง: ' . $room['room_name'];
                                                         </svg>
                                                         อนุมัติ
                                                     </a>
-                                                    <a href="approve_booking.php?id=<?= $booking['booking_id'] ?>&action=reject" 
+                                                    <a href="../approve_booking.php?id=<?= $booking['booking_id'] ?>&action=reject" 
                                                        class="btn btn-error btn-xs"
                                                        onclick="return confirm('ไม่อนุมัติการจองนี้?')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

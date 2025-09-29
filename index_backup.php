@@ -76,9 +76,6 @@ foreach ($week_bookings as $booking) {
     }
     $booking_by_date[$date][] = $booking;
 }
-
-// ตัวแปรสำหรับ user role
-$user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
 ?>
 
 <!DOCTYPE html>
@@ -87,7 +84,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($org_config['sub_title']) ?> - <?= htmlspecialchars($org_config['name']) ?></title>
+    <title><?= $org_config['sub_title'] ?> - <?= $org_config['name'] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -110,19 +107,19 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <?= generateNavigation('index', $user_role, true) ?>
+                    <?= generateNavigation('index', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
             <a class="btn btn-ghost text-xl flex items-center gap-2">
                 <?php if (file_exists($org_config['logo_path'])): ?>
-                    <img src="<?= htmlspecialchars($org_config['logo_path']) ?>" alt="Logo" class="w-8 h-8 object-contain">
+                    <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
-                <?= htmlspecialchars($org_config['sub_title']) ?>
+                <?= $org_config['sub_title'] ?>
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <?= generateNavigation('index', $user_role, false) ?>
+                <?= generateNavigation('index', $_SESSION['role'] ?? 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
@@ -133,12 +130,12 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
                     </svg>
                     สวัสดี, <?php echo htmlspecialchars($username); ?>
                     <span class="badge badge-sm ml-2 <?php 
-                        echo $user_role === 'admin' ? 'badge-error' : 
-                             ($user_role === 'manager' ? 'badge-warning' : 'badge-info'); 
+                        echo $_SESSION['role'] === 'admin' ? 'badge-error' : 
+                             ($_SESSION['role'] === 'manager' ? 'badge-warning' : 'badge-info'); 
                     ?>">
                         <?php 
-                            echo $user_role === 'admin' ? 'ผู้ดูแลระบบ' : 
-                                 ($user_role === 'manager' ? 'ผู้จัดการ' : 'ผู้ใช้'); 
+                            echo $_SESSION['role'] === 'admin' ? 'ผู้ดูแลระบบ' : 
+                                 ($_SESSION['role'] === 'manager' ? 'ผู้จัดการ' : 'ผู้ใช้'); 
                         ?>
                     </span>
                 </div>
@@ -159,8 +156,8 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
         <!-- Welcome Card -->
         <div class="card bg-base-100 shadow-xl mb-6">
             <div class="card-body">
-                <h2 class="card-title text-2xl">ยินดีต้อนรับสู่<?= htmlspecialchars($org_config['sub_title']) ?></h2>
-                <p><?= htmlspecialchars($org_config['name']) ?></p>
+                <h2 class="card-title text-2xl">ยินดีต้อนรับสู่<?= $org_config['sub_title'] ?></h2>
+                <p><?= $org_config['name'] ?></p>
                 <div class="stats shadow mt-4">
                     <div class="stat">
                         <div class="stat-title">วันที่</div>
@@ -277,7 +274,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
                     <?php else: ?>
                         <div class="space-y-3">
                             <?php 
-                            // แยกการจองตามสถานะ - ใช้ anonymous functions สำหรับ PHP 7.2
+                            // แยกการจองตามสถานะ
                             $approved_bookings = array_filter($today_bookings, function($b) { return $b['status'] === 'approved'; });
                             $pending_bookings_today = array_filter($today_bookings, function($b) { return $b['status'] === 'pending'; });
                             $other_bookings = array_filter($today_bookings, function($b) { return !in_array($b['status'], ['approved', 'pending']); });
@@ -382,7 +379,7 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
                                                 </div>
                                                 
                                                 <!-- ปุ่มจัดการสำหรับ admin/manager -->
-                                                <?php if ($booking['status'] == 'pending' && ($user_role === 'admin' || $user_role === 'manager')): ?>
+                                                <?php if ($booking['status'] == 'pending' && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'manager')): ?>
                                                 <div class="flex gap-1">
                                                     <a href="approve_booking.php?id=<?php echo $booking['booking_id']; ?>&action=approve" 
                                                        class="btn btn-success btn-xs" onclick="return confirm('อนุมัติการจองนี้?')">
@@ -473,14 +470,10 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
                                             <td><?php echo htmlspecialchars($booking['room_name']); ?></td>
                                             <td><?php echo htmlspecialchars($booking['fullname']); ?></td>
                                             <td>
-                                                <?php if ($user_role === 'admin' || $user_role === 'manager'): ?>
                                                 <div class="btn-group">
                                                     <a href="approve_booking.php?id=<?php echo $booking['booking_id']; ?>&action=approve" class="btn btn-success btn-xs">อนุมัติ</a>
                                                     <a href="approve_booking.php?id=<?php echo $booking['booking_id']; ?>&action=reject" class="btn btn-error btn-xs">ไม่อนุมัติ</a>
                                                 </div>
-                                                <?php else: ?>
-                                                    <span class="text-gray-500">รออนุมัติ</span>
-                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -491,6 +484,176 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
                 </div>
             </div>
         </div>
+
+        <!-- Admin Dashboard สำหรับส่งสรุปการจอง -->
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+        <div class="card bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl mt-6">
+            <div class="card-body">
+                <h3 class="card-title flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                    </svg>
+                    Admin Dashboard - ส่งสรุปการจองผ่าน Telegram
+                </h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                    <!-- ส่วนเลือกวันที่และ User -->
+                    <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            ส่งสรุปการจองแบบกำหนดเอง
+                        </h4>
+                        
+                        <form id="telegramSummaryForm" class="space-y-3">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text text-white">วันที่เริ่มต้น</span>
+                                    </label>
+                                    <input type="date" id="startDate" name="start_date" class="input input-bordered text-black" 
+                                           value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime('+30 days')); ?>">
+                                </div>
+                                
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text text-white">วันที่สิ้นสุด</span>
+                                    </label>
+                                    <input type="date" id="endDate" name="end_date" class="input input-bordered text-black" 
+                                           value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime('+30 days')); ?>">
+                                </div>
+                            </div>
+                            
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text text-white">ช่วงเวลาที่กำหนดไว้</span>
+                                </label>
+                                <div class="btn-group w-full">
+                                    <button type="button" onclick="setDateRange('today')" class="btn btn-sm btn-outline text-white border-white/30 hover:bg-white/20">วันนี้</button>
+                                    <button type="button" onclick="setDateRange('week')" class="btn btn-sm btn-outline text-white border-white/30 hover:bg-white/20">สัปดาห์นี้</button>
+                                    <button type="button" onclick="setDateRange('month')" class="btn btn-sm btn-outline text-white border-white/30 hover:bg-white/20">เดือนนี้</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text text-white">เลือกผู้รับ</span>
+                                </label>
+                                <select id="recipient" name="recipient" class="select select-bordered text-black">
+                                    <option value="all">ส่งให้ทุกคน</option>
+                                    <option value="admins">ส่งให้ Admin เท่านั้น</option>
+                                    <option value="managers">ส่งให้ Manager และ Admin</option>
+                                    <option value="custom">เลือกผู้ใช้เฉพาะ</option>
+                                </select>
+                            </div>
+                            
+                            <div id="userSelector" class="form-control hidden">
+                                <label class="label">
+                                    <span class="label-text text-white">เลือกผู้ใช้</span>
+                                </label>
+                                <select multiple id="selectedUsers" name="selected_users[]" class="select select-bordered text-black h-32">
+                                    <?php
+                                    // ดึงรายชื่อผู้ใช้ทั้งหมด
+                                    $stmt = $pdo->prepare("SELECT user_id, fullname, username, role FROM users WHERE is_active = 1 ORDER BY role DESC, fullname");
+                                    $stmt->execute();
+                                    $all_users = $stmt->fetchAll();
+                                    
+                                    foreach ($all_users as $user):
+                                        $role_badge = $user['role'] === 'admin' ? '[Admin]' : 
+                                                     ($user['role'] === 'manager' ? '[Manager]' : '[User]');
+                                    ?>
+                                        <option value="<?php echo $user['user_id']; ?>">
+                                            <?php echo htmlspecialchars($user['fullname'] . ' ' . $role_badge); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text text-white">ประเภทรายงาน</span>
+                                </label>
+                                <select id="reportType" name="report_type" class="select select-bordered text-black">
+                                    <option value="summary">สรุปทั่วไป</option>
+                                    <option value="detailed">รายละเอียดครบถ้วน</option>
+                                    <option value="pending_only">เฉพาะรออนุมัติ</option>
+                                    <option value="approved_only">เฉพาะอนุมัติแล้ว</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-warning w-full" id="sendTelegramBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                                ส่งผ่าน Telegram
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- ส่วนตัวอย่างข้อความ -->
+                    <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
+                        <h4 class="font-semibold mb-3 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            ตัวอย่างข้อความ
+                        </h4>
+                        
+                        <div id="messagePreview" class="bg-black/30 rounded p-3 text-sm font-mono">
+                            <div class="text-yellow-300">📊 สรุปการจองห้องประชุม</div>
+                            <div class="text-blue-300">🏢 <?php echo $org_config['name']; ?></div>
+                            <div class="text-green-300">📅 วันที่: <?php echo formatThaiDate(date('Y-m-d'), 'full'); ?></div>
+                            <div class="mt-2">
+                                <div class="text-white">📈 สถิติ:</div>
+                                <div class="ml-2">
+                                    <div>✅ อนุมัติแล้ว: <?php echo count(array_filter($today_bookings, function($b) { return $b['status'] === 'approved'; })); ?> รายการ</div>
+                                    <div>⏳ รออนุมัติ: <?php echo count(array_filter($today_bookings, function($b) { return $b['status'] === 'pending'; })); ?> รายการ</div>
+                                    <div>🔢 รวมทั้งหมด: <?php echo count($today_bookings); ?> รายการ</div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-gray-300">⏰ ส่งเมื่อ: [เวลาปัจจุบัน]</div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="mt-4 space-y-2">
+                            <button onclick="sendQuickSummary('today')" class="btn btn-sm btn-info w-full">
+                                📊 ส่งสรุปวันนี้ (ด่วน)
+                            </button>
+                            <button onclick="sendQuickSummary('pending')" class="btn btn-sm btn-warning w-full">
+                                ⏳ ส่งรายการรออนุมัติ (ด่วน)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- สถิติการส่ง Telegram -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="stat bg-white/20 rounded-lg text-center">
+                        <div class="stat-title text-white/80">ส่งวันนี้</div>
+                        <div class="stat-value text-2xl">0</div>
+                        <div class="stat-desc text-white/60">ข้อความ</div>
+                    </div>
+                    <div class="stat bg-white/20 rounded-lg text-center">
+                        <div class="stat-title text-white/80">ส่งสัปดาห์นี้</div>
+                        <div class="stat-value text-2xl">0</div>
+                        <div class="stat-desc text-white/60">ข้อความ</div>
+                    </div>
+                    <div class="stat bg-white/20 rounded-lg text-center">
+                        <div class="stat-title text-white/80">ผู้รับทั้งหมด</div>
+                        <div class="stat-value text-2xl"><?php echo count($all_users); ?></div>
+                        <div class="stat-desc text-white/60">คน</div>
+                    </div>
+                    <div class="stat bg-white/20 rounded-lg text-center">
+                        <div class="stat-title text-white/80">สถานะ Telegram</div>
+                        <div class="stat-value text-lg text-success">✅</div>
+                        <div class="stat-desc text-white/60">เชื่อมต่อแล้ว</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
         
         <!-- Quick Actions -->
         <div class="card bg-base-100 shadow-xl mt-6">
@@ -534,20 +697,222 @@ $user_role = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
     </div>
 
     <!-- Footer -->
-    <?php 
-    if (file_exists('version.php')) {
-        require_once 'version.php'; 
-        if (function_exists('getSystemFooter')) {
-            echo getSystemFooter();
-        }
-    }
-    ?>
+    <?php require_once 'version.php'; echo getSystemFooter(); ?>
 
     <script>
         // Auto refresh every 5 minutes
         setTimeout(function() {
             location.reload();
         }, 300000);
+        
+        // จัดการฟอร์ม Telegram Summary
+        document.addEventListener('DOMContentLoaded', function() {
+            const recipientSelect = document.getElementById('recipient');
+            const userSelector = document.getElementById('userSelector');
+            const telegramForm = document.getElementById('telegramSummaryForm');
+            const reportTypeSelect = document.getElementById('reportType');
+            const messagePreview = document.getElementById('messagePreview');
+            
+            // แสดง/ซ่อน user selector
+            if (recipientSelect) {
+                recipientSelect.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        userSelector.classList.remove('hidden');
+                    } else {
+                        userSelector.classList.add('hidden');
+                    }
+                    updateMessagePreview();
+                });
+            }
+            
+            // อัปเดตตัวอย่างข้อความ
+            function updateMessagePreview() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const reportType = document.getElementById('reportType').value;
+                const recipient = document.getElementById('recipient').value;
+                
+                let preview = `📊 สรุปการจองห้องประชุม\n`;
+                preview += `🏢 <?php echo $org_config['name']; ?>\n`;
+                
+                if (startDate === endDate) {
+                    preview += `📅 วันที่: ${formatDateThai(startDate)}\n\n`;
+                } else {
+                    preview += `📅 ช่วงวันที่: ${formatDateThai(startDate)} ถึง ${formatDateThai(endDate)}\n\n`;
+                }
+                
+                switch(reportType) {
+                    case 'summary':
+                        preview += `📈 สถิติ:\n`;
+                        preview += `✅ อนุมัติแล้ว: [จำนวน] รายการ\n`;
+                        preview += `⏳ รออนุมัติ: [จำนวน] รายการ\n`;
+                        preview += `🔢 รวมทั้งหมด: [จำนวน] รายการ`;
+                        break;
+                    case 'detailed':
+                        preview += `📝 รายละเอียดแต่ละการจอง:\n`;
+                        preview += `🏠 [ห้อง] | 🕐 [เวลา] | 👤 [ผู้จอง]\n`;
+                        preview += `📋 [วัตถุประสงค์]\n`;
+                        preview += `...และอื่นๆ`;
+                        break;
+                    case 'pending_only':
+                        preview += `⏳ รายการรออนุมัติ:\n`;
+                        preview += `🏠 [ห้อง] | 🕐 [เวลา] | 👤 [ผู้จอง]\n`;
+                        preview += `📝 [วัตถุประสงค์]`;
+                        break;
+                    case 'approved_only':
+                        preview += `✅ รายการอนุมัติแล้ว:\n`;
+                        preview += `🏠 [ห้อง] | 🕐 [เวลา] | 👤 [ผู้จอง]\n`;
+                        preview += `📝 [วัตถุประสงค์]`;
+                        break;
+                }
+                
+                preview += `\n\n👥 ส่งถึง: ${getRecipientText(recipient)}`;
+                preview += `\n⏰ ส่งเมื่อ: ${new Date().toLocaleString('th-TH')}`;
+                
+                if (messagePreview) {
+                    messagePreview.innerHTML = preview.replace(/\n/g, '<br>');
+                }
+            }
+            
+            function getRecipientText(recipient) {
+                switch(recipient) {
+                    case 'all': return 'ทุกคน';
+                    case 'admins': return 'Admin เท่านั้น';
+                    case 'managers': return 'Manager และ Admin';
+                    case 'custom': return 'ผู้ใช้ที่เลือก';
+                    default: return 'ไม่ระบุ';
+                }
+            }
+            
+            function formatDateThai(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+            }
+            
+            // ฟังก์ชันสำหรับเลือกช่วงวันที่
+            function setDateRange(type) {
+                const today = new Date();
+                const startDateInput = document.getElementById('startDate');
+                const endDateInput = document.getElementById('endDate');
+                
+                let startDate, endDate;
+                
+                switch(type) {
+                    case 'today':
+                        startDate = endDate = today;
+                        break;
+                    case 'week':
+                        // หาวันจันทร์ของสัปดาห์นี้
+                        const dayOfWeek = today.getDay();
+                        const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                        startDate = new Date(today);
+                        startDate.setDate(today.getDate() - daysToMonday);
+                        endDate = new Date(startDate);
+                        endDate.setDate(startDate.getDate() + 6);
+                        break;
+                    case 'month':
+                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                        break;
+                }
+                
+                startDateInput.value = startDate.toISOString().split('T')[0];
+                endDateInput.value = endDate.toISOString().split('T')[0];
+                updateMessagePreview();
+            }
+            
+            // Event listeners สำหรับอัปเดตตัวอย่าง
+            ['startDate', 'endDate', 'reportType', 'recipient'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', updateMessagePreview);
+                }
+            });
+            
+            // ส่งฟอร์ม Telegram
+            if (telegramForm) {
+                telegramForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const submitBtn = document.getElementById('sendTelegramBtn');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> กำลังส่ง...';
+                    
+                    const formData = new FormData(this);
+                    
+                    fetch('admin/send_telegram_summary.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('✅ ส่งข้อความสำเร็จ!\n\nส่งถึง: ' + data.recipients + ' คน\nเวลา: ' + new Date().toLocaleString('th-TH'));
+                        } else {
+                            alert('❌ เกิดข้อผิดพลาด: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('❌ เกิดข้อผิดพลาดในการส่งข้อความ');
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    });
+                });
+            }
+            
+            // เริ่มต้นตัวอย่างข้อความ
+            updateMessagePreview();
+        });
+        
+        // ฟังก์ชันส่งด่วน
+        function sendQuickSummary(type) {
+            const confirmMsg = type === 'today' ? 
+                'ส่งสรุปการจองวันนี้ให้ทุกคน?' : 
+                'ส่งรายการรออนุมัติให้ Manager และ Admin?';
+                
+            if (!confirm(confirmMsg)) return;
+            
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> กำลังส่ง...';
+            
+            const formData = new FormData();
+            formData.append('quick_type', type);
+            formData.append('start_date', '<?php echo date('Y-m-d'); ?>');
+            formData.append('end_date', '<?php echo date('Y-m-d'); ?>');
+            
+            fetch('admin/send_telegram_summary.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ส่งข้อความสำเร็จ!\n\nส่งถึง: ' + data.recipients + ' คน');
+                } else {
+                    alert('❌ เกิดข้อผิดพลาด: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ เกิดข้อผิดพลาดในการส่งข้อความ');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
+        }
     </script>
 </body>
 </html>

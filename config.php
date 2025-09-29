@@ -99,28 +99,61 @@ function getTelegramConfig() {
 }
 
 /**
- * ดึงการตั้งค่า Telegram ของผู้ใช้ (Simulation - ใช้ค่าเริ่มต้นก่อน)
- * ในอนาคตจะเชื่อมต่อกับฐานข้อมูล
+ * ดึงการตั้งค่า Telegram ของผู้ใช้
  */
 function getUserTelegramConfig($user_id) {
-    // ส่งค่าเริ่มต้นสำหรับผู้ใช้ (ใช้การตั้งค่าระบบ)
-    global $telegram_config;
-    return [
-        'user_id' => $user_id,
-        'enabled' => false, // ปิดใช้งานส่วนตัวเป็นค่าเริ่มต้น
-        'token' => '',
-        'chat_id' => '',
-        'use_system_default' => true
-    ];
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("SELECT telegram_chat_id, telegram_token, telegram_enabled FROM users WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$user) {
+            return [
+                'user_id' => $user_id,
+                'telegram_token' => '',
+                'chat_id' => '',
+                'enabled' => 0,
+                'verified' => 0
+            ];
+        }
+        
+        return [
+            'user_id' => $user_id,
+            'telegram_token' => $user['telegram_token'] ?? '',
+            'chat_id' => $user['telegram_chat_id'] ?? '',
+            'enabled' => $user['telegram_enabled'] ? 1 : 0,
+            'verified' => (!empty($user['telegram_token']) && !empty($user['telegram_chat_id'])) ? 1 : 0
+        ];
+    } catch (PDOException $e) {
+        return [
+            'user_id' => $user_id,
+            'telegram_token' => '',
+            'chat_id' => '',
+            'enabled' => 0,
+            'verified' => 0
+        ];
+    }
 }
 
 /**
- * บันทึกการตั้งค่า Telegram ของผู้ใช้ (Simulation)
+ * บันทึกการตั้งค่า Telegram ของผู้ใช้
  */
 function saveUserTelegramConfig($user_id, $token, $chat_id, $enabled = true) {
-    // ในอนาคตจะบันทึกลงฐานข้อมูล
-    // ตอนนี้ส่งคืน true เพื่อให้ทำงานได้
-    return true;
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE users 
+            SET telegram_token = ?, telegram_chat_id = ?, telegram_enabled = ?, updated_at = CURRENT_TIMESTAMP 
+            WHERE user_id = ?
+        ");
+        return $stmt->execute([$token, $chat_id, $enabled ? 1 : 0, $user_id]);
+    } catch (PDOException $e) {
+        error_log("Error saving telegram config: " . $e->getMessage());
+        return false;
+    }
 }
 
 /**

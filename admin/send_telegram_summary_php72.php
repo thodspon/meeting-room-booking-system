@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once 'config/database.php';
-require_once 'config.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
 
 // ตรวจสอบสิทธิ์ admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -76,10 +76,10 @@ try {
     $bookings = $stmt->fetchAll();
     
     // แยกข้อมูลตามสถานะ
-    $approved_bookings = array_filter($bookings, fn($b) => $b['status'] === 'approved');
-    $pending_bookings = array_filter($bookings, fn($b) => $b['status'] === 'pending');
-    $rejected_bookings = array_filter($bookings, fn($b) => $b['status'] === 'rejected');
-    $cancelled_bookings = array_filter($bookings, fn($b) => $b['status'] === 'cancelled');
+    $approved_bookings = array_filter($bookings, function($b) { return $b['status'] === 'approved'; });
+    $pending_bookings = array_filter($bookings, function($b) { return $b['status'] === 'pending'; });
+    $rejected_bookings = array_filter($bookings, function($b) { return $b['status'] === 'rejected'; });
+    $cancelled_bookings = array_filter($bookings, function($b) { return $b['status'] === 'cancelled'; });
     
     // สร้างข้อความ
     $message = generateTelegramMessage($org_config, $start_date, $end_date, $bookings, $approved_bookings, $pending_bookings, $rejected_bookings, $cancelled_bookings, $report_type);

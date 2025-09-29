@@ -1,10 +1,11 @@
 <?php
 session_start();
 require_once 'config/database.php';
+require_once 'config.php';
 require_once 'includes/functions.php';
 
-// โหลดการตั้งค่าองค์กร
-$org_config = include 'config.php';
+// ดึงข้อมูลองค์กร
+$org_config = getOrganizationConfig();
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
@@ -111,11 +112,7 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="calendar.php" class="text-base-content">ปฏิทินการจอง</a></li>
-                    <li><a href="my_bookings.php" class="text-base-content">การจองของฉัน</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
+                    <?= generateNavigation('calendar', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
             <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
@@ -127,11 +124,7 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php">จองห้องประชุม</a></li>
-                <li><a href="calendar.php" class="active">ปฏิทินการจอง</a></li>
-                <li><a href="my_bookings.php">การจองของฉัน</a></li>
-                <li><a href="reports.php">รายงาน</a></li>
+                <?= generateNavigation('calendar', $_SESSION['role'] ?? 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
@@ -361,13 +354,13 @@ $days_in_month = date('t', mktime(0, 0, 0, $current_month, 1, $current_year));
                         </svg>
                         การจองของฉัน
                     </a>
-                    <a href="reports.php" class="btn btn-accent">
+                    <a href="admin/reports.php" class="btn btn-accent">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                         รายงาน
                     </a>
-                    <a href="rooms.php" class="btn btn-info">
+                    <a href="admin/rooms.php" class="btn btn-info">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>

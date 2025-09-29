@@ -1,18 +1,18 @@
 <?php
 session_start();
-require_once 'config/database.php';
-require_once 'config.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
 
 // ตรวจสอบการ login และสิทธิ์
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 }
 
 // ตรวจสอบสิทธิ์ดูรายงาน
 if (!checkPermission($pdo, $_SESSION['user_id'], 'view_reports')) {
-    header('Location: index.php?error=permission');
+    header('Location: ../index.php?error=permission');
     exit();
 }
 
@@ -21,10 +21,10 @@ $org_config = getOrganizationConfig();
 $page_title = 'รายงานกิจกรรมผู้ใช้';
 
 // กำหนดช่วงวันที่เริ่มต้น
-$start_date = $_GET['start_date'] ?? date('Y-m-01'); // วันแรกของเดือน
-$end_date = $_GET['end_date'] ?? date('Y-m-t'); // วันสุดท้ายของเดือน
-$user_id_filter = $_GET['user_id'] ?? '';
-$activity_type = $_GET['activity_type'] ?? '';
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01'); // วันแรกของเดือน
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-t'); // วันสุดท้ายของเดือน
+$user_id_filter = isset($_GET['user_id']) ? $_GET['user_id'] : '';
+$activity_type = isset($_GET['activity_type']) ? $_GET['activity_type'] : '';
 
 // ดึงข้อมูลผู้ใช้ทั้งหมด
 $stmt = $pdo->prepare("SELECT user_id, fullname, department, role FROM users WHERE is_active = 1 ORDER BY fullname");
@@ -87,9 +87,9 @@ try {
 // สถิติกิจกรรม
 $stats = [
     'total' => count($activities),
-    'booking_created' => count(array_filter($activities, fn($a) => $a['activity_type'] === 'booking_created')),
-    'booking_approved' => count(array_filter($activities, fn($a) => $a['activity_type'] === 'booking_approved')),
-    'booking_cancelled' => count(array_filter($activities, fn($a) => $a['activity_type'] === 'booking_cancelled'))
+    'booking_created' => count(array_filter($activities, function($a) { return $a['activity_type'] === 'booking_created'; })),
+    'booking_approved' => count(array_filter($activities, function($a) { return $a['activity_type'] === 'booking_approved'; })),
+    'booking_cancelled' => count(array_filter($activities, function($a) { return $a['activity_type'] === 'booking_cancelled'; }))
 ];
 
 // สถิติผู้ใช้ที่ใช้งานมากที่สุด - แบบง่าย
@@ -244,33 +244,19 @@ try {
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="calendar.php" class="text-base-content">ปฏิทินการจอง</a></li>
-                    <li><a href="my_bookings.php" class="text-base-content">การจองของฉัน</a></li>
-                    <li><a href="rooms.php" class="text-base-content">จัดการห้องประชุม</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
-                    <li><a href="user_activity.php" class="text-base-content">กิจกรรมผู้ใช้</a></li>
-                    <li><a href="users.php" class="text-base-content">จัดการผู้ใช้</a></li>
+                    <?= generateNavigation('user_activity', isset($_SESSION['role']) ? $_SESSION['role'] : 'user', true) ?>
                 </ul>
             </div>
-            <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
-                <?php if (file_exists($org_config['logo_path'])): ?>
-                    <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
+            <a class="btn btn-ghost text-xl flex items-center gap-2" href="../index.php">
+                <?php if (file_exists('../' . $org_config['logo_path'])): ?>
+                    <img src="../<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
                 <?= $org_config['sub_title'] ?>
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php">จองห้องประชุม</a></li>
-                <li><a href="calendar.php">ปฏิทินการจอง</a></li>
-                <li><a href="my_bookings.php">การจองของฉัน</a></li>
-                <li><a href="rooms.php">จัดการห้องประชุม</a></li>
-                <li><a href="reports.php">รายงาน</a></li>
-                <li><a href="user_activity.php" class="active">กิจกรรมผู้ใช้</a></li>
-                <li><a href="users.php">จัดการผู้ใช้</a></li>
+                <?= generateNavigation('user_activity', isset($_SESSION['role']) ? $_SESSION['role'] : 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
@@ -421,7 +407,7 @@ try {
                             <div>
                                 <div class="text-sm">
                                     <strong>Debug Info:</strong> ช่วงเวลา: <?= $start_date ?> ถึง <?= $end_date ?> 
-                                    | การจองทั้งหมด: <?= $debug_info['total_bookings'] ?? 0 ?> รายการ
+                                    | การจองทั้งหมด: <?= isset($debug_info['total_bookings']) ? $debug_info['total_bookings'] : 0 ?> รายการ
                                     | กิจกรรมที่แสดง: <?= count($activities) ?> รายการ
                                     | ผู้ใช้: <?= count($users) ?> คน
                                     <?php if ($user_id_filter): ?>| กรองผู้ใช้: ID <?= $user_id_filter ?><?php endif; ?>
@@ -588,7 +574,7 @@ try {
 
     <!-- Footer -->
     <?php 
-    require_once 'version.php'; 
+    require_once '../version.php'; 
     echo getSystemFooter(); 
     ?>
 
@@ -600,7 +586,7 @@ try {
         
         // Add loading state to filter form
         document.querySelector('form').addEventListener('submit', function() {
-            const button = this.querySelector('button[type="submit"]');
+            var button = this.querySelector('button[type="submit"]');
             button.innerHTML = '<span class="loading loading-spinner loading-xs"></span> กำลังค้นหา...';
             button.disabled = true;
         });

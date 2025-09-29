@@ -4,8 +4,8 @@
  * ใช้สำหรับอัพเดตชื่อองค์กรจากค่าคงที่เป็นแบบไดนามิก
  */
 
-require_once 'config.php';
-require_once 'config/database.php';
+require_once '../config.php';
+require_once '../config/database.php';
 
 // ดึงข้อมูลองค์กรจากการตั้งค่า
 $org_config = getOrganizationConfig();

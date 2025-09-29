@@ -108,10 +108,7 @@ $my_bookings = $stmt->fetchAll();
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="my_bookings.php" class="text-base-content">การจองของฉัน</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
+                    <?= generateNavigation('my_bookings', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
             <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
@@ -123,19 +120,31 @@ $my_bookings = $stmt->fetchAll();
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php">จองห้องประชุม</a></li>
-                <li><a href="my_bookings.php" class="active">การจองของฉัน</a></li>
-                <li><a href="reports.php">รายงาน</a></li>
+                <?= generateNavigation('my_bookings', $_SESSION['role'] ?? 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                     สวัสดี, <?php echo htmlspecialchars($_SESSION['username']); ?>
+                    <span class="badge badge-sm ml-2 <?php 
+                        echo $_SESSION['role'] === 'admin' ? 'badge-error' : 
+                             ($_SESSION['role'] === 'manager' ? 'badge-warning' : 'badge-info'); 
+                    ?>">
+                        <?php 
+                            echo $_SESSION['role'] === 'admin' ? 'ผู้ดูแลระบบ' : 
+                                 ($_SESSION['role'] === 'manager' ? 'ผู้จัดการ' : 'ผู้ใช้'); 
+                        ?>
+                    </span>
                 </div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                     <li><a href="profile.php" class="text-base-content">โปรไฟล์</a></li>
+                    <li><a href="admin/telegram_settings.php" class="text-base-content"><i class="fab fa-telegram mr-1"></i>ตั้งค่า Telegram</a></li>
+                    <li><a href="my_bookings.php" class="text-base-content">การจองของฉัน</a></li>
+                    <li><hr></li>
                     <li><a href="version_info.php" class="text-base-content">ข้อมูลระบบ</a></li>
                     <li><a href="logout.php" class="text-base-content">ออกจากระบบ</a></li>
                 </ul>

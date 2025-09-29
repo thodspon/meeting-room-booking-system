@@ -31,61 +31,6 @@ define('SYSTEM_ORGANIZATION', getOrganizationName());
  * ประวัติการพัฒนาระบบ
  */
 $version_history = [
-    '2.6' => [
-        'date' => '2025-09-29',
-        'title' => 'Telegram Integration Pro Edition - Individual User Telegram System',
-        'features' => [
-            'ระบบ Telegram แบบใช้ข้อมูลผู้ใช้รายบุคคล - telegram_chat_id, telegram_token จากตาราง users',
-            'ระบบ 2FA ส่งไปยัง Telegram ส่วนตัวของผู้ใช้ - ใช้ token และ chat_id ของตัวเอง',
-            'ระบบแจ้งเตือน Login ส่งไปยัง Telegram ของผู้ใช้ที่เข้าระบบ',
-            'ระบบ Reports ส่ง Telegram ให้ Manager ได้ - เพิ่มสิทธิ์ Manager ในการใช้งาน',
-            'ระบบ Dual Routing - ถ้าผู้ใช้ตั้งค่า Telegram ใช้ของตัวเอง ถ้าไม่มีใช้ระบบเดิม',
-            'ฟังก์ชัน sendTelegramMessageToUser() - ส่งข้อความไปยัง Telegram ผู้ใช้รายบุคคล',
-            'ปรับปรุงระบบ Navigation ให้แสดงเมนูตามสิทธิ์อย่างชัดเจน',
-            'แก้ไขปัญหาการทำงานของ Reports Telegram ให้ส่งได้จริง',
-            'ระบบ Debug และ Error Handling ที่แข็งแกร่งขึ้น'
-        ],
-        'telegram_improvements' => [
-            'Individual Token System - แต่ละ user ใช้ bot token ของตัวเอง',
-            'Personal Chat ID - ส่งไปยัง chat_id ส่วนตัวของแต่ละผู้ใช้',
-            'telegram_enabled Flag - เปิด/ปิดการใช้งาน Telegram ได้ต่อผู้ใช้',
-            'Fallback System - ถ้าไม่ได้ตั้งค่า Telegram ส่วนตัว ใช้ระบบเดิม',
-            'Enhanced Security - ข้อมูล Telegram ไม่ถูกแชร์ระหว่างผู้ใช้',
-            'Better Error Messages - แสดงสถานะการส่งที่ชัดเจน'
-        ],
-        'manager_permissions' => [
-            'Manager Telegram Access - Manager สามารถใช้ Telegram Dashboard ได้',
-            'Reports Permission - Manager ส่ง Reports ผ่าน Telegram ได้',
-            'Quick Actions - Manager ใช้ปุ่มส่งด่วนได้ (วันนี้, รออนุมัติ)',
-            'Recipient Selection - Manager เลือกผู้รับได้ตามสิทธิ์',
-            'Manager UI - แสดงส่วน Telegram Dashboard สำหรับ Manager',
-            'Permission Check - ตรวจสอบสิทธิ์แบบ role-based'
-        ],
-        'system_enhancements' => [
-            'PHP 7.2 Compatibility - แปลง arrow functions เป็น anonymous functions',
-            'Output Buffer Management - จัดการ ob_start(), ob_clean() ให้ถูกต้อง',
-            'JSON Response Handling - ป้องกัน output ที่ไม่ใช่ JSON',
-            'Session Management - จัดการ session หมดอายุแบบ graceful',
-            'Error Logging - บันทึก error อย่างละเอียดเพื่อ debug',
-            'Function Duplication Fix - แก้ไขปัญหา function ถูก declare ซ้ำ'
-        ],
-        'technical_improvements' => [
-            'Database Schema - เพิ่มคอลัมน์ telegram_chat_id, telegram_token, telegram_enabled',
-            'Migration Ready - รองรับการ migrate จากระบบเก่าไปใหม่',
-            'API Enhancement - ปรับปรุง Telegram API handling',
-            'Code Organization - จัดระเบียบ functions ให้อยู่ใน includes/functions.php',
-            'Debug Tools - สร้างเครื่องมือ debug หลากหลายตัว',
-            'Testing Suite - มีไฟล์ทดสอบระบบต่างๆ ครบถ้วน'
-        ],
-        'bugfixes' => [
-            'แก้ไข Reports Telegram ที่กดแล้วไม่ทำงาน',
-            'แก้ไข Function Declaration Duplication',
-            'แก้ไข Session Expired Handling',
-            'แก้ไข JSON Response Corruption',
-            'แก้ไข Permission Check Logic',
-            'แก้ไข Navigation Menu Display Issues'
-        ]
-    ],
     '2.5.1' => [
         'date' => '2025-09-27',
         'title' => 'Admin Pro Edition Plus - Date Range Enhancement',

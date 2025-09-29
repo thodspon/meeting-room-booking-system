@@ -49,7 +49,20 @@ try {
         $stmt->execute([$user['user_id'], $code]);
 
         // Send 2FA code via Telegram
-        $telegram_result = send2FACode($user['username'], $code, $user['user_id']);
+        // ตรวจสอบว่าผู้ใช้ตั้งค่า Telegram ไว้หรือไม่
+        if (!empty($user['telegram_chat_id']) && !empty($user['telegram_token']) && $user['telegram_enabled']) {
+            // ส่งไปยัง Telegram ของผู้ใช้เอง
+            $message = "🔐 รหัส 2FA สำหรับเข้าสู่ระบบ\n\n";
+            $message .= "👤 ผู้ใช้: {$user['fullname']} ({$user['username']})\n";
+            $message .= "🔑 รหัส: {$code}\n";
+            $message .= "⏰ หมดอายุใน 5 นาที\n";
+            $message .= "🌐 IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'Unknown');
+            
+            $telegram_result = sendTelegramMessageToUser($user['telegram_token'], $user['telegram_chat_id'], $message);
+        } else {
+            // ใช้ระบบเริ่มต้น (send2FACode เดิม)
+            $telegram_result = send2FACode($user['username'], $code, $user['user_id']);
+        }
 
         if ($telegram_result && $telegram_result['ok']) {
             logActivity($pdo, $user['user_id'], '2fa_code_sent', "2FA code sent for user: {$username}");
@@ -133,14 +146,17 @@ try {
         // Log successful login
         logActivity($pdo, $user['user_id'], 'login', "Successful login");
 
-        // Send login notification
-        $message = "🔐 การเข้าสู่ระบบ\n\n";
-        $message .= "👤 ผู้ใช้: {$user['fullname']} ({$user['username']})\n";
-        $message .= "🏥 หน่วยงาน: {$user['department']}\n";
-        $message .= "🌐 IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'Unknown') . "\n";
-        $message .= "⏰ " . date('d/m/Y H:i:s');
-        
-        sendTelegramMessage($message);
+        // Send login notification to user's own Telegram
+        if (!empty($user['telegram_chat_id']) && !empty($user['telegram_token']) && $user['telegram_enabled']) {
+            $message = "🔐 การเข้าสู่ระบบ\n\n";
+            $message .= "👤 ผู้ใช้: {$user['fullname']} ({$user['username']})\n";
+            $message .= "🏥 หน่วยงาน: {$user['department']}\n";
+            $message .= "🌐 IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'Unknown') . "\n";
+            $message .= "⏰ " . date('d/m/Y H:i:s');
+            
+            // ส่งไปยัง Telegram ของ user นั้นๆ
+            sendTelegramMessageToUser($user['telegram_token'], $user['telegram_chat_id'], $message);
+        }
 
         header('Location: index.php');
         exit();

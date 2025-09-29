@@ -5,10 +5,10 @@ mb_internal_encoding('UTF-8');
 ini_set('default_charset', 'UTF-8');
 
 session_start();
-require_once 'config/database.php';
-require_once 'config.php';
-require_once 'includes/functions.php';
-require_once 'vendor/autoload.php'; // สำหรับ PhpSpreadsheet และ TCPDF
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
+require_once '../vendor/autoload.php'; // สำหรับ PhpSpreadsheet และ TCPDF
 
 // Get organization config
 $org_config = getOrganizationConfig();
@@ -16,13 +16,13 @@ $page_title = 'รายงานการจองห้องประชุ�
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 }
 
 // ตรวจสอบสิทธิ์
 if (!checkPermission($pdo, $_SESSION['user_id'], 'view_reports')) {
-    header('Location: index.php?error=permission');
+    header('Location: ../index.php?error=permission');
     exit();
 }
 
@@ -545,31 +545,19 @@ $org_config = getOrganizationConfig();
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="calendar.php" class="text-base-content">ปฏิทินการจอง</a></li>
-                    <li><a href="my_bookings.php" class="text-base-content">การจองของฉัน</a></li>
-                    <li><a href="rooms.php" class="text-base-content">จัดการห้องประชุม</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
-                    <li><a href="users.php" class="text-base-content">จัดการผู้ใช้</a></li>
+                    <?= generateNavigation('reports', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
-            <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
-                <?php if (file_exists($org_config['logo_path'])): ?>
-                    <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
-                <?php endif; ?>
+            <a class="btn btn-ghost text-xl flex items-center gap-2" href="../index.php">
+                <?php if (file_exists('../' . $org_config['logo_path'])): ?>
+                    <img src="../<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
+                <?php endif; ?>  
                 <?= $org_config['sub_title'] ?>
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php">จองห้องประชุม</a></li>
-                <li><a href="calendar.php">ปฏิทินการจอง</a></li>
-                <li><a href="my_bookings.php">การจองของฉัน</a></li>
-                <li><a href="rooms.php">จัดการห้องประชุม</a></li>
-                <li><a href="reports.php" class="active">รายงาน</a></li>
-                <li><a href="users.php">จัดการผู้ใช้</a></li>
+                <?= generateNavigation('reports', $_SESSION['role'] ?? 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
@@ -578,9 +566,9 @@ $org_config = getOrganizationConfig();
                     สวัสดี, <?php echo htmlspecialchars($_SESSION['username']); ?>
                 </div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                    <li><a href="profile.php" class="text-base-content">โปรไฟล์</a></li>
-                    <li><a href="version_info.php" class="text-base-content">ข้อมูลระบบ</a></li>
-                    <li><a href="logout.php" class="text-base-content">ออกจากระบบ</a></li>
+                    <li><a href="../profile.php" class="text-base-content">โปรไฟล์</a></li>
+                    <li><a href="../version_info.php" class="text-base-content">ข้อมูลระบบ</a></li>
+                    <li><a href="../logout.php" class="text-base-content">ออกจากระบบ</a></li>
                 </ul>
             </div>
         </div>

@@ -3,8 +3,8 @@
 date_default_timezone_set('Asia/Bangkok');
 
 // Telegram configuration - กรุณาแก้ไขให้ตรงกับ Bot ของคุณ
-define('TELEGRAM_TOKEN', '');
-define('TELEGRAM_CHAT_ID', '');
+define('TELEGRAM_TOKEN', '8293088704:AAGFTG5djH-eNgmf9nKir0x4tzB0L6td8Yg');
+define('TELEGRAM_CHAT_ID', '6124231421'); // ใส่ Chat ID ของคุณที่นี่
 
 /**
  * Send message to Telegram (ใช้การตั้งค่าเดิม)
@@ -279,58 +279,76 @@ function checkPermission($pdo, $user_id, $permission) {
  * Get navigation menu items based on user role
  */
 function getNavigationMenu($user_role) {
+    // ตรวจสอบว่าอยู่ในโฟลเดอร์ admin หรือไม่
+    $current_dir = basename(dirname($_SERVER['PHP_SELF']));
+    $is_in_admin = ($current_dir === 'admin');
+    $base_path = $is_in_admin ? '../' : '';
+    $admin_path = $is_in_admin ? '' : 'admin/';
+    
     $menu_items = [
         'index' => [
             'name' => 'หน้าหลัก',
-            'url' => 'index.php',
+            'url' => $base_path . 'index.php',
             'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
             'roles' => ['admin', 'manager', 'user']
         ],
         'booking' => [
             'name' => 'จองห้องประชุม',
-            'url' => 'booking.php',
+            'url' => $base_path . 'booking.php',
             'icon' => 'M12 6v6m0 0v6m0-6h6m-6 0H6',
             'roles' => ['admin', 'manager', 'user']
         ],
         'calendar' => [
             'name' => 'ปฏิทินการจอง',
-            'url' => 'calendar.php',
+            'url' => $base_path . 'calendar.php',
             'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
             'roles' => ['admin', 'manager', 'user']
         ],
         'my_bookings' => [
             'name' => 'การจองของฉัน',
-            'url' => 'my_bookings.php',
+            'url' => $base_path . 'my_bookings.php',
             'icon' => 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
             'roles' => ['admin', 'manager', 'user']
         ],
         'rooms' => [
             'name' => 'จัดการห้องประชุม',
-            'url' => 'rooms.php',
+            'url' => $admin_path . 'rooms.php',
             'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
             'roles' => ['admin', 'manager']
         ],
         'reports' => [
             'name' => 'รายงาน',
-            'url' => 'reports.php',
+            'url' => $admin_path . 'reports.php',
             'icon' => 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+            'roles' => ['admin', 'manager']
+        ],
+        'room_bookings' => [
+            'name' => 'จัดการการจอง',
+            'url' => $admin_path . 'room_bookings.php',
+            'icon' => 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m0 5a2 2 0 012 2v2a1 1 0 01-1 1h-4a1 1 0 01-1-1v-2a2 2 0 012-2z',
             'roles' => ['admin', 'manager']
         ],
         'user_activity' => [
             'name' => 'กิจกรรมผู้ใช้',
-            'url' => 'user_activity.php',
+            'url' => $admin_path . 'user_activity.php',
             'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
             'roles' => ['admin', 'manager']
         ],
         'users' => [
             'name' => 'จัดการผู้ใช้',
-            'url' => 'users.php',
+            'url' => $admin_path . 'users.php',
             'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z',
+            'roles' => ['admin']
+        ],
+        'organization_config' => [
+            'name' => 'ตั้งค่าองค์กร',
+            'url' => $admin_path . 'organization_config.php',
+            'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
             'roles' => ['admin']
         ],
         'telegram_settings' => [
             'name' => 'ตั้งค่า Telegram',
-            'url' => 'telegram_settings.php',
+            'url' => $admin_path . 'telegram_settings.php',
             'icon' => 'M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84',
             'roles' => ['admin']
         ]
@@ -352,6 +370,11 @@ function getNavigationMenu($user_role) {
 function generateNavigation($current_page = '', $user_role = 'user', $mobile = false) {
     $menu_items = getNavigationMenu($user_role);
     $html = '';
+    
+    // ตรวจสอบหน้าปัจจุบันให้ตรงกับ key ในเมนู
+    if (!$current_page) {
+        $current_page = getCurrentPageKey();
+    }
     
     foreach ($menu_items as $key => $item) {
         $active_class = ($current_page === $key) ? 'active' : '';
@@ -375,6 +398,31 @@ function generateNavigation($current_page = '', $user_role = 'user', $mobile = f
 }
 
 /**
+ * Get current page key for navigation
+ */
+function getCurrentPageKey() {
+    $current_file = basename($_SERVER['PHP_SELF'], '.php');
+    $current_dir = basename(dirname($_SERVER['PHP_SELF']));
+    
+    // Map ไฟล์ปัจจุบันให้ตรงกับ key ในเมนู
+    $page_mapping = [
+        'index' => 'index',
+        'booking' => 'booking',
+        'calendar' => 'calendar',
+        'my_bookings' => 'my_bookings',
+        'rooms' => 'rooms',
+        'reports' => 'reports',
+        'room_bookings' => 'room_bookings',
+        'user_activity' => 'user_activity',
+        'users' => 'users',
+        'organization_config' => 'organization_config',
+        'telegram_settings' => 'telegram_settings'
+    ];
+    
+    return isset($page_mapping[$current_file]) ? $page_mapping[$current_file] : '';
+}
+
+/**
  * Generate random password
  */
 function generatePassword($length = 8) {
@@ -382,9 +430,38 @@ function generatePassword($length = 8) {
     return substr(str_shuffle($chars), 0, $length);
 }
 
+/**
+ * ส่งข้อความ Telegram ไปยัง user เฉพาะโดยใช้ token และ chat_id ของ user นั้นๆ
+ */
+function sendTelegramMessageToUser($token, $chat_id, $message) {
+    if (empty($token) || empty($chat_id)) {
+        return ['ok' => false, 'description' => 'Token หรือ Chat ID ไม่ถูกต้อง'];
+    }
+    
+    $url = "https://api.telegram.org/bot{$token}/sendMessage";
+    $data = [
+        'chat_id' => $chat_id,
+        'text' => $message,
+        'parse_mode' => 'HTML'
+    ];
+    
+    $options = [
+        'http' => [
+            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method' => 'POST',
+            'content' => http_build_query($data),
+            'timeout' => 30
+        ]
+    ];
+    
+    $context = stream_context_create($options);
+    $result = @file_get_contents($url, false, $context);
+    
+    if ($result === false) {
+        return ['ok' => false, 'description' => 'ไม่สามารถเชื่อมต่อ Telegram API ได้'];
+    }
+    
+    return json_decode($result, true);
+}
 
 
-
-
-
-?>

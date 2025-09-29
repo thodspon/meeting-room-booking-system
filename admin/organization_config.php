@@ -5,23 +5,24 @@
  */
 
 session_start();
-require_once 'config/database.php';
-require_once 'includes/functions.php';
-require_once 'version.php';
+require_once '../config/database.php';
+require_once '../includes/functions.php';
+require_once '../version.php';
+require_once '../config.php';
 
 // ตรวจสอบการ login และสิทธิ์ admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: index.php?error=permission');
+    header('Location: ../index.php?error=permission');
     exit();
 }
 
 // จัดการการบันทึกข้อมูล
 if ($_POST['action'] === 'save' && $_POST) {
     $config_content = generateConfigFile($_POST);
-    if (file_put_contents('config.php', $config_content)) {
+    if (file_put_contents('../config.php', $config_content)) {
         $success_message = "บันทึกการตั้งค่าเรียบร้อยแล้ว";
         // รีโหลดข้อมูลใหม่
-        require_once 'config.php';
+        require_once '../config.php';
     } else {
         $error_message = "ไม่สามารถบันทึกการตั้งค่าได้";
     }
@@ -143,7 +144,7 @@ function getOrganizationHeader() {
     <!-- Navbar -->
     <div class="navbar bg-primary text-primary-content">
         <div class="navbar-start">
-            <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
+            <a class="btn btn-ghost text-xl flex items-center gap-2" href="../index.php">
                 <?php if (file_exists($org_config['logo_path'])): ?>
                     <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
@@ -159,7 +160,7 @@ function getOrganizationHeader() {
                     สวัสดี, <?php echo htmlspecialchars($_SESSION['username']); ?>
                 </div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">กลับหน้าหลัก</a></li>
+                    <li><a href="../index.php" class="text-base-content">กลับหน้าหลัก</a></li>
                     <li><a href="logout.php" class="text-base-content">ออกจากระบบ</a></li>
                 </ul>
             </div>
@@ -170,7 +171,7 @@ function getOrganizationHeader() {
     <div class="container mx-auto p-4">
         <div class="breadcrumbs text-sm mb-4">
             <ul>
-                <li><a href="index.php">หน้าหลัก</a></li>
+                <li><a href="../index.php">หน้าหลัก</a></li>
                 <li><a href="users.php">จัดการระบบ</a></li>
                 <li>การตั้งค่าองค์กร</li>
             </ul>

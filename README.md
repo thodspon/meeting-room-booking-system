@@ -177,28 +177,101 @@
 - ดูการจองของตนเอง
 - แก้ไข/ยกเลิกการจอง
 
-## โครงสร้างไฟล์
+## 📁 โครงสร้างไฟล์ (v2.5.1 - Organized Structure)
 
 ```
-smdmeeting_room/
-├── config/
-│   └── database.php          # การตั้งค่าฐานข้อมูล
-├── includes/
-│   └── functions.php         # ฟังก์ชันต่างๆ
-├── database/
-│   └── meeting_room_db.sql   # ไฟล์ฐานข้อมูล
-├── vendor/                   # Dependencies
-├── assets/
-│   ├── css/
-│   ├── js/
+meeting-room-booking-system/
+├── 📁 admin/                    # ไฟล์สำหรับผู้ดูแลระบบ
+│   ├── users.php               # จัดการผู้ใช้
+│   ├── rooms.php               # จัดการห้องประชุม
+│   ├── reports.php             # รายงาน
+│   ├── room_bookings.php       # จัดการการจอง
+│   ├── user_activity.php       # ติดตามกิจกรรมผู้ใช้
+│   ├── organization_config.php  # ตั้งค่าองค์กร
+│   ├── telegram_settings.php   # ตั้งค่า Telegram
+│   ├── send_telegram_summary.php # ส่งสรุปผ่าน Telegram
+│   ├── debug_system.php        # เครื่องมือ debug
+│   └── README.md               # คู่มือการใช้งาน Admin
+├── 📁 docs/                     # เอกสารทั้งหมด
+│   ├── 📁 changelog/           # บันทึกการเปลี่ยนแปลง
+│   │   ├── CHANGELOG.md
+│   │   ├── CHANGELOG_v2.5.md
+│   │   └── UPDATE_v2.5.1.md
+│   ├── 📁 installation/        # คู่มือติดตั้ง
+│   │   ├── INSTALL.md
+│   │   ├── ALMA9_PERMISSIONS.md
+│   │   └── ORGANIZATION_SETUP.md
+│   ├── 📁 guides/              # คู่มือการใช้งาน
+│   │   ├── GITHUB_UPLOAD_GUIDE.md
+│   │   ├── GIT_UPLOAD_GUIDE.md
+│   │   ├── PASSWORD_RESET_GUIDE.md
+│   │   └── TELEGRAM_GUIDE.md
+│   ├── CLEANUP_LOG.md          # บันทึกการทำความสะอาด
+│   ├── FIX_LOG.md              # บันทึกการแก้ไข
+│   └── README.md               # ภาพรวมเอกสาร
+├── 📁 scripts/                  # Scripts สำหรับบำรุงรักษา
+│   ├── setup_permissions.sh    # ตั้งค่าสิทธิ์ (Linux)
+│   ├── cleanup_password_resets.php # ทำความสะอาดรหัสผ่าน
+│   └── README.md               # คู่มือ Scripts
+├── 📁 tests/                    # ไฟล์ทดสอบ
+│   ├── test_forgot_password.php
+│   ├── test_permissions.php
+│   ├── test_system.php
+│   ├── test_telegram.php
+│   ├── test_telegram_form.php
+│   └── README.md               # คู่มือการทดสอบ
+├── 📁 config/                   # การตั้งค่า
+│   ├── database.php            # ตั้งค่าฐานข้อมูล
+│   ├── database.php.example
+│   ├── telegram_users.json     # ข้อมูล Telegram Users
+│   └── telegram_users.json.example
+├── 📁 includes/                 # ไฟล์ระบบ
+│   ├── functions.php           # ฟังก์ชันหลัก
+│   └── functions.php.example
+├── 📁 database/                 # ไฟล์ฐานข้อมูล
+│   ├── meeting_room_db.sql     # ฐานข้อมูลหลัก
+│   ├── add_room_color.sql      # อัพเดทสีห้อง
+│   ├── password_reset_system.sql # ระบบรีเซ็ตรหัสผ่าน
+│   └── update_to_color_edition.sql
+├── 📁 assets/                   # ไฟล์ Static
 │   └── images/
-├── index.php                 # หน้าหลัก
-├── login.php                 # หน้าเข้าสู่ระบบ
-├── booking.php               # หน้าจองห้องประชุม
-├── rooms.php                 # จัดการห้องประชุม
-├── reports.php               # รายงาน
-└── README.md
+│       └── logo.png
+├── 📁 vendor/                   # Dependencies
+├── 🌐 หน้าเว็บหลัก
+├── index.php                   # หน้าแรก + Admin Dashboard
+├── login.php                   # เข้าสู่ระบบ
+├── logout.php                  # ออกจากระบบ
+├── booking.php                 # จองห้องประชุม
+├── calendar.php                # ปฏิทินการจอง
+├── public_calendar.php         # ปฏิทินสาธารณะ
+├── my_bookings.php             # การจองของฉัน
+├── profile.php                 # ข้อมูลส่วนตัว
+├── 🔐 ระบบรักษาความปลอดภัย
+├── auth.php                    # ยืนยันตัวตน
+├── create_session.php          # สร้าง Session
+├── forgot_password.php         # ลืมรหัสผ่าน
+├── reset_password.php          # รีเซ็ตรหัสผ่าน
+├── simple_forgot_password.php  # รีเซ็ตรหัสผ่านแบบง่าย
+├── 🔧 API และ Utilities
+├── approve_booking.php         # อนุมัติการจอง
+├── cancel_booking.php          # ยกเลิกการจอง
+├── check_availability.php      # ตรวจสอบความว่าง
+├── version.php                 # ข้อมูลเวอร์ชัน
+├── version_info.php            # แสดงข้อมูลเวอร์ชัน
+├── config.php                  # การตั้งค่าหลัก
+├── 📄 Files อื่นๆ
+├── composer.json               # PHP Dependencies
+├── composer.lock
+├── LICENSE                     # สัญญาอนุญาต
+└── README.md                   # คู่มือหลัก
 ```
+
+### 🎯 **ประโยชน์ของโครงสร้างใหม่**
+- ✅ **แยกหมวดหมู่ชัดเจน**: ไฟล์จัดกลุ่มตามการใช้งาน
+- ✅ **ค้นหาง่าย**: รู้ว่าไฟล์อยู่ที่ไหน
+- ✅ **บำรุงรักษาง่าย**: แก้ไขไฟล์ในหมวดที่เกี่ยวข้อง
+- ✅ **ความปลอดภัย**: แยกไฟล์ admin และ public
+- ✅ **เอกสารครบถ้วน**: มี README ในทุกโฟลเดอร์
 
 ## การแจ้งเตือนผ่าน Telegram
 

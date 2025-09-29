@@ -17,7 +17,7 @@ if (isset($_SESSION['user_id'])) {
 // ทดสอบการเชื่อมต่อฐานข้อมูล
 echo "<h2>Database Connection</h2>";
 try {
-    require_once 'config/database.php';
+    require_once '../config/database.php';
     echo "✅ เชื่อมต่อฐานข้อมูลสำเร็จ<br>";
     
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM users");
@@ -31,7 +31,7 @@ try {
 // ทดสอบ config
 echo "<h2>Configuration</h2>";
 try {
-    require_once 'config.php';
+    require_once '../config.php';
     $org_config = getOrganizationConfig();
     echo "✅ ข้อมูลองค์กร: " . $org_config['name'] . "<br>";
 } catch (Exception $e) {
@@ -41,7 +41,7 @@ try {
 // ทดสอบ functions
 echo "<h2>Functions</h2>";
 try {
-    require_once 'includes/functions.php';
+    require_once '../includes/functions.php';
     echo "✅ โหลด functions.php สำเร็จ<br>";
     
     if (function_exists('formatThaiDate')) {
@@ -59,7 +59,7 @@ try {
 echo "<h2>Navigation</h2>";
 echo '<a href="login.php" target="_blank">ทดสอบ login.php</a><br>';
 echo '<a href="forgot_password.php" target="_blank">ทดสอบ forgot_password.php</a><br>';
-echo '<a href="index.php" target="_blank">ทดสอบ index.php</a><br>';
+echo '<a href="../index.php" target="_blank">ทดสอบ index.php</a><br>';
 
 // แสดง PHP info สำคัญ
 echo "<h2>PHP Info</h2>";

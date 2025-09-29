@@ -11,8 +11,8 @@
  * @since 2025-09-26
  */
 
-require_once 'config/database.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../includes/functions.php';
 
 // ป้องกันการเข้าถึงผ่าน web browser (ควรรันผ่าน CLI เท่านั้น)
 if (isset($_SERVER['HTTP_HOST'])) {

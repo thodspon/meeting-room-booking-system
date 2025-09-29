@@ -1,17 +1,21 @@
 <?php
 session_start();
-require_once 'config/database.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
+
+// ดึงข้อมูลองค์กร
+$org_config = getOrganizationConfig();
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 }
 
 // ตรวจสอบสิทธิ์
 if (!checkPermission($pdo, $_SESSION['user_id'], 'manage_users')) {
-    header('Location: index.php?error=permission');
+    header('Location: ../index.php?error=permission');
     exit();
 }
 
@@ -21,7 +25,7 @@ $success = '';
 // ประมวลผลฟอร์ม
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $action = $_POST['action'] ?? '';
+        $action = isset($_POST['action']) ? $_POST['action'] : '';
         
         if ($action === 'add') {
             $username = trim($_POST['username']);
@@ -162,27 +166,19 @@ if (isset($_GET['edit'])) {
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="rooms.php" class="text-base-content">จัดการห้องประชุม</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
-                    <li><a href="users.php" class="text-base-content">จัดการผู้ใช้</a></li>
+                    <?= generateNavigation('users', isset($_SESSION['role']) ? $_SESSION['role'] : 'user', true) ?>
                 </ul>
             </div>
-            <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
-                <?php if (file_exists($org_config['logo_path'])): ?>
-                    <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
+            <a class="btn btn-ghost text-xl flex items-center gap-2" href="../index.php">
+                <?php if (file_exists('../' . $org_config['logo_path'])): ?>
+                    <img src="../<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
                 <?= $org_config['sub_title'] ?>
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php">จองห้องประชุม</a></li>
-                <li><a href="rooms.php">จัดการห้องประชุม</a></li>
-                <li><a href="reports.php">รายงาน</a></li>
-                <li><a href="users.php" class="active">จัดการผู้ใช้</a></li>
+                <?= generateNavigation('users', isset($_SESSION['role']) ? $_SESSION['role'] : 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
@@ -191,8 +187,9 @@ if (isset($_GET['edit'])) {
                     สวัสดี, <?php echo htmlspecialchars($_SESSION['username']); ?>
                 </div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                    <li><a href="profile.php" class="text-base-content">โปรไฟล์</a></li>
-                    <li><a href="logout.php" class="text-base-content">ออกจากระบบ</a></li>
+                    <li><a href="../profile.php" class="text-base-content">โปรไฟล์</a></li>
+                    <li><a href="../version_info.php" class="text-base-content">ข้อมูลระบบ</a></li>
+                    <li><a href="../logout.php" class="text-base-content">ออกจากระบบ</a></li>
                 </ul>
             </div>
         </div>
@@ -464,10 +461,10 @@ if (isset($_GET['edit'])) {
                         <?php
                         $user_stats = [
                             'total' => count($users),
-                            'active' => count(array_filter($users, fn($u) => $u['is_active'])),
-                            'admin' => count(array_filter($users, fn($u) => $u['role'] === 'admin')),
-                            'manager' => count(array_filter($users, fn($u) => $u['role'] === 'manager')),
-                            'user' => count(array_filter($users, fn($u) => $u['role'] === 'user'))
+                            'active' => count(array_filter($users, function($u) { return $u['is_active']; })),
+                            'admin' => count(array_filter($users, function($u) { return $u['role'] === 'admin'; })),
+                            'manager' => count(array_filter($users, function($u) { return $u['role'] === 'manager'; })),
+                            'user' => count(array_filter($users, function($u) { return $u['role'] === 'user'; }))
                         ];
                         ?>
                         
@@ -500,6 +497,6 @@ if (isset($_GET['edit'])) {
     </div>
 
     <!-- Footer -->
-    <?php require_once 'version.php'; echo getSystemFooter(); ?>
+    <?php require_once '../version.php'; echo getSystemFooter(); ?>
 </body>
 </html>

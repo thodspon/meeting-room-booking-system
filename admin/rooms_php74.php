@@ -1,17 +1,21 @@
 <?php
 session_start();
-require_once 'config/database.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
+
+// ดึงข้อมูลองค์กร
+$org_config = getOrganizationConfig();
 
 // ตรวจสอบการ login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit();
 }
 
 // ตรวจสอบสิทธิ์
 if (!checkPermission($pdo, $_SESSION['user_id'], 'manage_rooms')) {
-    header('Location: index.php?error=permission');
+    header('Location: ../index.php?error=permission');
     exit();
 }
 
@@ -122,27 +126,19 @@ if (isset($_GET['edit'])) {
                     </svg>
                 </div>
                 <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li><a href="index.php" class="text-base-content">หน้าหลัก</a></li>
-                    <li><a href="booking.php" class="text-base-content">จองห้องประชุม</a></li>
-                    <li><a href="rooms.php" class="text-base-content">จัดการห้องประชุม</a></li>
-                    <li><a href="reports.php" class="text-base-content">รายงาน</a></li>
-                    <li><a href="users.php" class="text-base-content">จัดการผู้ใช้</a></li>
+                    <?= generateNavigation('rooms', $_SESSION['role'] ?? 'user', true) ?>
                 </ul>
             </div>
-            <a class="btn btn-ghost text-xl flex items-center gap-2" href="index.php">
-                <?php if (file_exists($org_config['logo_path'])): ?>
-                    <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
+            <a class="btn btn-ghost text-xl flex items-center gap-2" href="../index.php">
+                <?php if (file_exists('../' . $org_config['logo_path'])): ?>
+                    <img src="../<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
                 <?= $org_config['sub_title'] ?>
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
-                <li><a href="index.php">หน้าหลัก</a></li>
-                <li><a href="booking.php">จองห้องประชุม</a></li>
-                <li><a href="rooms.php" class="active">จัดการห้องประชุม</a></li>
-                <li><a href="reports.php">รายงาน</a></li>
-                <li><a href="users.php">จัดการผู้ใช้</a></li>
+                <?= generateNavigation('rooms', $_SESSION['role'] ?? 'user', false) ?>
             </ul>
         </div>
         <div class="navbar-end">
@@ -151,8 +147,8 @@ if (isset($_GET['edit'])) {
                     สวัสดี, <?php echo htmlspecialchars($_SESSION['username']); ?>
                 </div>
                 <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                    <li><a href="profile.php" class="text-base-content">โปรไฟล์</a></li>
-                    <li><a href="logout.php" class="text-base-content">ออกจากระบบ</a></li>
+                    <li><a href="../profile.php" class="text-base-content">โปรไฟล์</a></li>
+                    <li><a href="../logout.php" class="text-base-content">ออกจากระบบ</a></li>
                 </ul>
             </div>
         </div>

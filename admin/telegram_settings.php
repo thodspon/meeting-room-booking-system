@@ -1,18 +1,17 @@
 <?php
 session_start();
-require_once 'config/database.php';
-require_once 'config.php';
-require_once 'includes/functions.php';
+require_once '../config/database.php';
+require_once '../config.php';
+require_once '../includes/functions.php';
 
 // ตรวจสอบการเข้าสู่ระบบ
-if (!isLoggedIn()) {
-    header("Location: login.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
     exit();
 }
 
-$current_user = getCurrentUser();
-$user_id = $current_user['id'];
-$is_admin = isAdmin($current_user['role']);
+$user_id = $_SESSION['user_id'];
+$is_admin = ($_SESSION['role'] === 'admin');
 
 // ดึงการตั้งค่า Telegram ปัจจุบันของผู้ใช้
 $user_telegram_config = getUserTelegramConfig($user_id);
@@ -177,7 +176,7 @@ $page_title = 'ตั้งค่า Telegram';
     <!-- Navigation -->
     <div class="navbar bg-primary text-primary-content shadow-lg">
         <div class="flex-1">
-            <a href="index.php" class="btn btn-ghost text-xl flex items-center gap-2">
+            <a href="../index.php" class="btn btn-ghost text-xl flex items-center gap-2">
                 <?php if (file_exists($org_config['logo_path'])): ?>
                     <img src="<?= $org_config['logo_path'] ?>" alt="Logo" class="w-8 h-8 object-contain">
                 <?php endif; ?>
@@ -207,7 +206,7 @@ $page_title = 'ตั้งค่า Telegram';
         <!-- Breadcrumb -->
         <div class="text-sm breadcrumbs mb-6">
             <ul>
-                <li><a href="index.php"><i class="fas fa-home mr-1"></i>หน้าหลัก</a></li>
+                <li><a href="../index.php"><i class="fas fa-home mr-1"></i>หน้าหลัก</a></li>
                 <li><a href="profile.php"><i class="fas fa-user mr-1"></i>โปรไฟล์</a></li>
                 <li><i class="fab fa-telegram mr-1"></i>ตั้งค่า Telegram</li>
             </ul>

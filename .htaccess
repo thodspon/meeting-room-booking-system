@@ -4,6 +4,13 @@
 # Enable Rewrite Engine
 RewriteEngine On
 
+# Set default page to check login status
+DirectoryIndex default.php login.php index.php
+
+# Redirect root to default.php for login check
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^$ default.php [L]
+
 # Security Headers
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options nosniff
